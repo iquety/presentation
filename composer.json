@@ -1,0 +1,68 @@
+{
+    "name": "iquety/presentation",
+    "type": "tool",
+    "description": "Library to handle view templates",
+    "keywords": ["library"],
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.4.0"
+    },
+    "require-dev": {
+        "behat/behat": "^3.14",
+        "codacy/coverage": "dev-master",
+        "iquety/docmap": "*",
+        "phpmd/phpmd": "^2.15",
+        "phpstan/phpstan": "^1.8",
+        "phpunit/phpunit": "^9.5",
+        "friendsofphp/php-cs-fixer": "^3.94"
+    },
+    "autoload": {
+        "psr-4": {
+            "Iquety\\Presentation\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "prefer-stable": true,
+    "scripts" : {
+        "test": [
+            "vendor/bin/phpunit --testdox"
+        ],
+        "docmap" : [
+            "rm -Rf docs/pt-br/*",
+            "vendor/bin/docmap -s docs-src/pt-br -d docs/pt-br -r leiame.md -l pt-br",
+            "rm -Rf docs/en/*",
+            "vendor/bin/docmap -s docs-src/en -d docs/en"
+        ],
+        "coverage": "vendor/bin/phpunit --coverage-html coverage",
+        "mess": [
+            "phpmd ./src ansi cleancode,codesize,unusedcode,naming,design,controversial",
+            "phpmd ./tests ansi cleancode,codesize,unusedcode,naming,design,controversial"
+        ],
+        "stan": [
+            "phpstan analyse --level=8 src",
+            "phpstan analyse --level=8 tests"
+        ],
+        "psr-check": [
+            "php-cs-fixer check --diff -v"
+        ],
+
+        "psr-fix": [
+            "php-cs-fixer fix -v"
+        ],
+        "analyse": [
+            "@psr-check",
+            "@mess",
+            "@stan"
+        ]
+    }
+}
