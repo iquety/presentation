@@ -6,7 +6,13 @@
     "license": "MIT",
     "minimum-stability": "stable",
     "require": {
-        "php": "^8.4.0"
+        "php": "^8.4.0",
+        "eftec/bladeone": "^4.19",
+        "latte/latte": "^3.1",
+        "league/plates": "^3.6",
+        "mustache/mustache": "^3.0",
+        "smarty/smarty": "^5.8",
+        "twig/twig": "^3.24"
     },
     "require-dev": {
         "behat/behat": "^3.14",
