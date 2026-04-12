@@ -26,9 +26,10 @@ class MustacheEngineTest extends TestCase
         $engine = new MustacheEngine();
         $engine->addViewPath(__DIR__.'/Stubs/MustacheOne');
         $engine->addViewPath(__DIR__.'/Stubs/MustacheTwo');
+        $engine->setCachePath(__DIR__.'/Stubs/MustacheCache');        
 
-        $this->assertSame('Hello, Ricardo!', $engine->render('hello', ['name' => 'Ricardo']));
-        $this->assertSame('Bye, Ricardo!', $engine->render('bye', ['name' => 'Ricardo']));
+        $this->assertSame('Hello, Ricardo!', $engine->render('folder.hello', ['name' => 'Ricardo']));
+        $this->assertSame('Bye, Ricardo!', $engine->render('folder.bye', ['name' => 'Ricardo']));
     }
 }
 

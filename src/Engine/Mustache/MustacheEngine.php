@@ -12,21 +12,13 @@ use Mustache\Loader\FilesystemLoader;
 
 class MustacheEngine implements TemplateEngine
 {
-    private bool $debug = false;
-
     private ?Engine $instance = null;
 
-    private array $viewPaths = [];
-
     private string $cachePath = '';
-
-    private int $cacheLifetime = 120;
-
-    private string $compilePath = '';
-
-    private string $configPath = '';
-
+    
     private array $defaultData = [];
+
+    private array $viewPaths = [];
 
     public function addDefaultData(array $data): void
     {
@@ -38,40 +30,25 @@ class MustacheEngine implements TemplateEngine
         $this->viewPaths[] = $viewPath;
     }
 
-    public function enableDebugging(): void
-    {
-        $this->debug = true;
-    }
-
-    public function setCachePath(string $cachePath, int $lifetime): void
+    public function setCachePath(string $cachePath): void
     {
         $this->cachePath = $cachePath;
     }
 
-    public function setConfigPath(string $configPath): void
+    /** @return Engine */
+    public function getEngine(): mixed
     {
-        $this->configPath = $configPath;
+        return $this->engine();
     }
 
-    public function setCompilePath(string $compilePath): void
-    {
-        throw new \LogicException('xxx');
-    }
-    
     private function engine(): Engine
     {
         if ($this->instance !== null) {
             return $this->instance;
         }
 
-        // diretórios obrigatórios
-
         if ($this->viewPaths === []) {
             throw new PathException('No view path was added.');
-        }
-
-        if ($this->compilePath === []) {
-            throw new PathException('The compile path has not been set.');
         }
 
         $loaderList = [];
@@ -80,23 +57,17 @@ class MustacheEngine implements TemplateEngine
             $loaderList[] = new FilesystemLoader($viewPath, ['extension' => '.ms']);
         }
 
-        $mustache = new Engine([
-            'loader' =>  new CascadingLoader($loaderList),
-        ]);
+        $settings = [
+            'entity_flags' => ENT_QUOTES,
+            'loader'       => new CascadingLoader($loaderList),
+        ];
 
-        // diretórios opcionais
+        if ($this->cachePath !== '') {
+            $settings['cache'] = $this->cachePath;
+            $settings['cache_file_mode'] = 0666; // Optional: Set file permissions
+        }
 
-        // if ($this->cachePath !== '') {
-        //     $smarty->caching = true;
-        //     $smarty->cache_lifetime = $this->cacheLifetime;
-
-        //     $smarty->setCacheDir($this->cachePath);
-        // }
-
-        // if ($this->configPath !== '') {
-        //     $smarty->setConfigDir($this->configPath);
-        // }
-
+        $mustache = new Engine($settings);
 
         $this->instance = $mustache;
 
@@ -109,9 +80,10 @@ class MustacheEngine implements TemplateEngine
      */
     public function render(string $template, array $data = []): string
     {
+        $template = str_replace('.', '/', $template) . '.ms';
         $variables = array_merge($this->defaultData, $data);
 
-        return $this->engine()->render($template .'.ms', $variables);
+        return $this->engine()->render($template, $variables);
     }
 }
 
