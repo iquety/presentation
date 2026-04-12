@@ -11,9 +11,8 @@
 
 ## Sinopse
 
-**Iquety Presentation** é uma biblioteca que oferece funcionalidades para manipulação
-de templates. Oferece suporte para as principais implementações do mercado: 
-Blade, Latte, Mustache, Plates, Smarty e Twig.
+**Iquety Presentation** é uma biblioteca que oferece funcionalidades para manipulação de templates.
+Oferece suporte para as principais implementações do mercado como Blade, Latte, Mustache, Plates, Smarty e Twig.
 
 ```bash
 composer require iquety/presentation
