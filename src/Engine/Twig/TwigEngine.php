@@ -14,13 +14,13 @@ use Twig\Loader\FilesystemLoader;
 // ex: https://github.com/smarty-php/smarty/blob/master/demo/templates/index.tpl
 class TwigEngine implements TemplateEngine
 {
-    private bool $debug = false;
-
     private ?Environment $instance = null;
 
-    private array $viewPaths = [];
-
+    private string $cachePath = '';
+    
     private array $defaultData = [];
+    
+    private array $viewPaths = [];
 
     public function addDefaultData(array $data): void
     {
@@ -32,24 +32,16 @@ class TwigEngine implements TemplateEngine
         $this->viewPaths[] = $viewPath;
     }
 
-    public function enableDebugging(): void
+    public function setCachePath(string $cachePath): void
     {
-        $this->debug = true;
+        $this->cachePath = $cachePath;
     }
 
-    public function setCachePath(string $cachePath, int $lifetime): void
-    {
-        throw new \LogicException('O cache do Twig não é suportado no momento.');
-    }
 
-    public function setConfigPath(string $configPath): void
+    /** @return Environment */
+    public function getEngine(): mixed
     {
-        throw new \LogicException('O diretório de configuração do Twig não é suportado no momento.');
-    }
-
-    public function setCompilePath(string $compilePath): void
-    {
-        throw new \LogicException('O cache do Twig não é suportado no momento.');
+        return $this->engine();
     }
 
     private function engine(): Environment
@@ -64,11 +56,17 @@ class TwigEngine implements TemplateEngine
 
         $loader = new FilesystemLoader($this->viewPaths);
 
-        $twig = new Environment($loader, ['debug' => $this->debug]);
+        $settings = [
+            'debug' => true,
+        ];
 
-        if ($this->debug === true) {
-            $twig->addExtension(new DebugExtension());
+        if ($this->cachePath !== '') {
+            $settings['cache'] = $this->cachePath;
         }
+
+        $twig = new Environment($loader, $settings);
+
+        $twig->addExtension(new DebugExtension());
 
         $this->instance = $twig;
 
@@ -81,9 +79,10 @@ class TwigEngine implements TemplateEngine
      */
     public function render(string $template, array $data = []): string
     {
+        $template = str_replace('.', '/', $template) . '.twig';
         $variables = array_merge($this->defaultData, $data);
 
-        return $this->engine()->render($template . '.html', $variables);
+        return $this->engine()->render($template, $variables);
     }
 }
 

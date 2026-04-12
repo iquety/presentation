@@ -10,13 +10,9 @@ interface TemplateEngine
     
     public function addViewPath(string $viewPath): void;
 
-    public function enableDebugging(): void;
+    public function setCachePath(string $cachePath): void;
 
-    public function setCachePath(string $cachePath, int $lifetime): void;
-
-    public function setCompilePath(string $compilePath): void;
-
-    public function setConfigPath(string $configPath): void;
+    public function getEngine(): mixed;
 
     /**
      * @param array<string,mixed> $data

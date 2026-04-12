@@ -26,9 +26,10 @@ class TwigEngineTest extends TestCase
         $engine = new TwigEngine();
         $engine->addViewPath(__DIR__.'/Stubs/TwigOne');
         $engine->addViewPath(__DIR__.'/Stubs/TwigTwo');
+        $engine->setCachePath(__DIR__.'/Stubs/TwigCache');
 
-        $this->assertSame('Hello, Ricardo!', $engine->render('hello', ['name' => 'Ricardo']));
-        $this->assertSame('Bye, Ricardo!', $engine->render('bye', ['name' => 'Ricardo']));
+        $this->assertSame('Hello, Ricardo!', $engine->render('folder.hello', ['name' => 'Ricardo']));
+        $this->assertSame('Bye, Ricardo!', $engine->render('folder.bye', ['name' => 'Ricardo']));
     }
 }
 
