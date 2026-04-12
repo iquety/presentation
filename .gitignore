@@ -5,3 +5,5 @@ git
 super-linter.log
 coverage/
 vendor/
+tests/Stubs/BladeCache/*
+!tests/Stubs/BladeCache/.gitkeep

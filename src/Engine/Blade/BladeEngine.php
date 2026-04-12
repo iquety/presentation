@@ -71,6 +71,9 @@ class BladeEngine implements TemplateEngine
     {
         $variables = array_merge($this->defaultData, $data);
         
+        // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
         return $this->engine()->run($template, $variables);
+
+        // todo: padronizar throw new PathException('View not found: ' . $template);
     }
 }

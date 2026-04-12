@@ -10,8 +10,6 @@ use Twig\Environment;
 use Twig\Extension\DebugExtension;
 use Twig\Loader\FilesystemLoader;
 
-// todo: implementar cache e diretório de configuração igual ao Smarty
-// ex: https://github.com/smarty-php/smarty/blob/master/demo/templates/index.tpl
 class TwigEngine implements TemplateEngine
 {
     private ?Environment $instance = null;
@@ -82,7 +80,10 @@ class TwigEngine implements TemplateEngine
         $template = str_replace('.', '/', $template) . '.twig';
         $variables = array_merge($this->defaultData, $data);
 
+        // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
         return $this->engine()->render($template, $variables);
+
+        // todo: padronizar throw new PathException('View not found: ' . $template);
     }
 }
 

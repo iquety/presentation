@@ -66,6 +66,7 @@ class SmartyEngine implements TemplateEngine
             $smarty->setCacheDir($this->cachePath . DIRECTORY_SEPARATOR . 'cached');
         }
 
+        // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
 
         $this->instance = $smarty;
 
@@ -81,7 +82,10 @@ class SmartyEngine implements TemplateEngine
         $template = str_replace('.', '/', $template) . '.tpl';
         $variables = array_merge($this->defaultData, $data);
 
+        // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
         return $this->engine()->fetch($template, $variables);
+
+        // todo: padronizar throw new PathException('View not found: ' . $template);
     }
 }
 

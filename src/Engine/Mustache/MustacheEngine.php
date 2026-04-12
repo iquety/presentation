@@ -83,7 +83,10 @@ class MustacheEngine implements TemplateEngine
         $template = str_replace('.', '/', $template) . '.ms';
         $variables = array_merge($this->defaultData, $data);
 
+        // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
         return $this->engine()->render($template, $variables);
+
+        // todo: padronizar throw new PathException('View not found: ' . $template);
     }
 }
 

@@ -78,6 +78,7 @@ class PlatesEngine implements TemplateEngine
         $template = str_replace('.', '/', $template);
         $variables = array_merge($this->defaultData, $data);
 
+        // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
         foreach ($this->namespaceList as $namespace => $path) {
             if (file_exists($path . '/' . $template . '.tpl') === true) {
                 return $this->engine()->render($namespace . '::' . $template, $variables);    
