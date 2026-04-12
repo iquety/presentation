@@ -14,15 +14,18 @@ class MustacheEngine implements TemplateEngine
 {
     private ?Engine $instance = null;
 
-    private string $cachePath = '';
-    
+    /** @var array<string,mixed> $defaultData */
     private array $defaultData = [];
 
+    private string $cachePath = '';
+
+    /** @var array<string> $viewPaths */
     private array $viewPaths = [];
 
+    /** @param array<string,mixed> $data */
     public function addDefaultData(array $data): void
     {
-        $this->defaultData =+ $data;
+        $this->defaultData = array_merge($this->defaultData, $data);
     }
 
     public function addViewPath(string $viewPath): void
@@ -39,6 +42,21 @@ class MustacheEngine implements TemplateEngine
     public function getEngine(): mixed
     {
         return $this->engine();
+    }
+
+    /**
+     * @param array<string,mixed> $data
+     * @throws PathException
+     */
+    public function render(string $template, array $data = []): string
+    {
+        $template = str_replace('.', '/', $template) . '.ms';
+        $variables = array_merge($this->defaultData, $data);
+
+        // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
+        return $this->engine()->render($template, $variables);
+
+        // todo: padronizar throw new PathException('View not found: ' . $template);
     }
 
     private function engine(): Engine
@@ -64,7 +82,7 @@ class MustacheEngine implements TemplateEngine
 
         if ($this->cachePath !== '') {
             $settings['cache'] = $this->cachePath;
-            $settings['cache_file_mode'] = 0666; // Optional: Set file permissions
+            $settings['cache_file_mode'] = 0o666; // Optional: Set file permissions
         }
 
         $mustache = new Engine($settings);
@@ -73,20 +91,4 @@ class MustacheEngine implements TemplateEngine
 
         return $this->instance;
     }
-
-    /**
-     * @param array<string,mixed> $data
-     * @throws ViewPathException
-     */
-    public function render(string $template, array $data = []): string
-    {
-        $template = str_replace('.', '/', $template) . '.ms';
-        $variables = array_merge($this->defaultData, $data);
-
-        // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
-        return $this->engine()->render($template, $variables);
-
-        // todo: padronizar throw new PathException('View not found: ' . $template);
-    }
 }
-

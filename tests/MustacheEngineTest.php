@@ -24,12 +24,11 @@ class MustacheEngineTest extends TestCase
     public function render(): void
     {
         $engine = new MustacheEngine();
-        $engine->addViewPath(__DIR__.'/Stubs/MustacheOne');
-        $engine->addViewPath(__DIR__.'/Stubs/MustacheTwo');
-        $engine->setCachePath(__DIR__.'/Stubs/MustacheCache');        
+        $engine->addViewPath(__DIR__ . '/Stubs/MustacheOne');
+        $engine->addViewPath(__DIR__ . '/Stubs/MustacheTwo');
+        $engine->setCachePath(__DIR__ . '/Stubs/MustacheCache');
 
         $this->assertSame('Hello, Ricardo!', $engine->render('folder.hello', ['name' => 'Ricardo']));
         $this->assertSame('Bye, Ricardo!', $engine->render('folder.bye', ['name' => 'Ricardo']));
     }
 }
-

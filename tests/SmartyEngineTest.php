@@ -24,12 +24,11 @@ class SmartyEngineTest extends TestCase
     public function render(): void
     {
         $engine = new SmartyEngine();
-        $engine->addViewPath(__DIR__.'/Stubs/SmartyOne');
-        $engine->addViewPath(__DIR__.'/Stubs/SmartyTwo');
-        $engine->setCachePath(__DIR__.'/Stubs/SmartyCache');
+        $engine->addViewPath(__DIR__ . '/Stubs/SmartyOne');
+        $engine->addViewPath(__DIR__ . '/Stubs/SmartyTwo');
+        $engine->setCachePath(__DIR__ . '/Stubs/SmartyCache');
 
         $this->assertSame('Hello, Ricardo!', $engine->render('folder.hello', ['name' => 'Ricardo']));
         $this->assertSame('Bye, Ricardo!', $engine->render('folder.bye', ['name' => 'Ricardo']));
     }
 }
-

@@ -12,41 +12,53 @@ use PHPUnit\Framework\TestCase as FrameworkTestCase;
  */
 abstract class TestCase extends FrameworkTestCase
 {
-    // public function tearDown(): void
-    // {
-    //     $stubsPath = realpath(__DIR__ . '/Stubs');
+    public function tearDown(): void
+    {
+        $stubsPath = realpath(__DIR__ . '/Stubs');
 
-    //     $cachePathList = [
-    //         $stubsPath . '/BladeCache',
-    //         $stubsPath . '/LatteCache',
-    //         $stubsPath . '/MustacheCache',
-    //         $stubsPath . '/SmartyCache',
-    //         $stubsPath . '/TwigCache',
-    //     ];
+        $cachePathList = [
+            $stubsPath . '/BladeCache',
+            $stubsPath . '/LatteCache',
+            $stubsPath . '/MustacheCache',
+            $stubsPath . '/SmartyCache',
+            $stubsPath . '/TwigCache',
+        ];
 
-    //     foreach ($cachePathList as $cachePath) {
-    //         if (is_dir($cachePath) === false) {
-    //             continue;
-    //         }
+        foreach ($cachePathList as $cachePath) {
+            if (is_dir($cachePath) === false) {
+                continue;
+            }
 
-    //         // $this->removeFiles($cachePath);
-    //     }
-    // }
+            $this->removeFiles($cachePath);
+        }
+    }
 
-    // private function removeFiles(string $path): void
-    // {
-    //     $fileList = scandir($path, SCANDIR_SORT_NONE);
+    private function removeFiles(string $path): void
+    {
+        $fileList = scandir($path, SCANDIR_SORT_NONE);
 
-    //     foreach ($fileList as $file) {
-    //         if ($file === '.' || $file === '..' || $file === '.gitkeep') {
-    //             continue;
-    //         }
+        if ($fileList === false) {
+            return;
+        }
 
-    //         $filePath = $path . DIRECTORY_SEPARATOR . $file;
+        foreach ($fileList as $file) {
+            if ($file === '.' || $file === '..' || $file === '.gitkeep') {
+                continue;
+            }
 
-    //         if (is_file($filePath) === true) {
-    //             unlink($filePath);
-    //         }
-    //     }
-    // }
+            $filePath = $path . DIRECTORY_SEPARATOR . $file;
+
+            if (is_dir($filePath) === true) {
+                $this->removeFiles($filePath);
+
+                rmdir($filePath);
+
+                continue;
+            }
+
+            if (is_file($filePath) === true) {
+                unlink($filePath);
+            }
+        }
+    }
 }

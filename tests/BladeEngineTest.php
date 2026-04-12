@@ -24,12 +24,11 @@ class BladeEngineTest extends TestCase
     public function render(): void
     {
         $engine = new BladeEngine();
-        $engine->addViewPath(__DIR__.'/Stubs/BladeOne');
-        $engine->addViewPath(__DIR__.'/Stubs/BladeTwo');
-        $engine->setCachePath(__DIR__.'/Stubs/BladeCache');        
+        $engine->addViewPath(__DIR__ . '/Stubs/BladeOne');
+        $engine->addViewPath(__DIR__ . '/Stubs/BladeTwo');
+        $engine->setCachePath(__DIR__ . '/Stubs/BladeCache');
 
         $this->assertSame('Hello, Ricardo!', $engine->render('folder.hello', ['name' => 'Ricardo']));
         $this->assertSame('Bye, Ricardo!', $engine->render('folder.bye', ['name' => 'Ricardo']));
     }
 }
-

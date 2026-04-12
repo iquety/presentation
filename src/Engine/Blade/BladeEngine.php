@@ -12,15 +12,18 @@ class BladeEngine implements TemplateEngine
 {
     private ?BladeOne $instance = null;
 
-    private string $cachePath = '';
-    
+    /** @var array<string,mixed> $defaultData */
     private array $defaultData = [];
 
+    private string $cachePath = '';
+
+    /** @var array<string> $viewPaths */
     private array $viewPaths = [];
 
+    /** @param array<string,mixed> $data */
     public function addDefaultData(array $data): void
     {
-        $this->defaultData =+ $data;
+        $this->defaultData = array_merge($this->defaultData, $data);
     }
 
     public function addViewPath(string $viewPath): void
@@ -33,10 +36,24 @@ class BladeEngine implements TemplateEngine
         $this->cachePath = $cachePath;
     }
 
-    /** @return Engine */
+    /** @return BladeOne */
     public function getEngine(): mixed
     {
         return $this->engine();
+    }
+
+    /**
+     * @param array<string,mixed> $data
+     * @throws PathException
+     */
+    public function render(string $template, array $data = []): string
+    {
+        $variables = array_merge($this->defaultData, $data);
+
+        // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
+        return $this->engine()->run($template, $variables);
+
+        // todo: padronizar throw new PathException('View not found: ' . $template);
     }
 
     private function engine(): BladeOne
@@ -49,31 +66,18 @@ class BladeEngine implements TemplateEngine
             throw new PathException('No view path was added.');
         }
 
-        $blade = new BladeOne($this->viewPaths);
-        // $blade->setMode(BladeOne::MODE_AUTO);
+        $blade = new BladeOne();
         $blade->pipeEnable   = true;
         $blade->throwOnError = true;
+        // $blade->setMode(BladeOne::MODE_AUTO);
+        $blade->setPath($this->viewPaths, null);
 
         if ($this->cachePath !== '') {
             $blade->setPath($this->viewPaths, $this->cachePath);
         }
-        
+
         $this->instance = $blade;
 
         return $this->instance;
-    }
-
-    /**
-     * @param array<string,mixed> $data
-     * @throws ViewPathException
-     */
-    public function render(string $template, array $data = []): string
-    {
-        $variables = array_merge($this->defaultData, $data);
-        
-        // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
-        return $this->engine()->run($template, $variables);
-
-        // todo: padronizar throw new PathException('View not found: ' . $template);
     }
 }

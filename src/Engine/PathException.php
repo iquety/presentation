@@ -6,6 +6,4 @@ namespace Iquety\Presentation\Engine;
 
 use LogicException;
 
-class PathException extends LogicException
-{
-}
+class PathException extends LogicException {}

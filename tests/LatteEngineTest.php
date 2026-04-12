@@ -24,12 +24,11 @@ class LatteEngineTest extends TestCase
     public function render(): void
     {
         $engine = new LatteEngine();
-        $engine->addViewPath(__DIR__.'/Stubs/LatteOne');
-        $engine->addViewPath(__DIR__.'/Stubs/LatteTwo');
-        $engine->setCachePath(__DIR__.'/Stubs/LatteCache');        
+        $engine->addViewPath(__DIR__ . '/Stubs/LatteOne');
+        $engine->addViewPath(__DIR__ . '/Stubs/LatteTwo');
+        $engine->setCachePath(__DIR__ . '/Stubs/LatteCache');
 
         $this->assertSame('Hello, Ricardo!', $engine->render('folder.hello', ['name' => 'Ricardo']));
         $this->assertSame('Bye, Ricardo!', $engine->render('folder.bye', ['name' => 'Ricardo']));
     }
 }
-

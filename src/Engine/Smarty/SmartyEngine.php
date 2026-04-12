@@ -6,7 +6,6 @@ namespace Iquety\Presentation\Engine\Smarty;
 
 use Iquety\Presentation\Engine\TemplateEngine;
 use Iquety\Presentation\Engine\PathException;
-use PhpParser\Node\Scalar\MagicConst\Dir;
 use Smarty\Smarty;
 
 class SmartyEngine implements TemplateEngine
@@ -14,14 +13,17 @@ class SmartyEngine implements TemplateEngine
     private ?Smarty $instance = null;
 
     private string $cachePath = '';
-    
+
+    /** @var array<string,mixed> $defaultData */
     private array $defaultData = [];
-    
+
+    /** @var array<string> $viewPaths */
     private array $viewPaths = [];
 
+    /** @param array<string,mixed> $data */
     public function addDefaultData(array $data): void
     {
-        $this->defaultData =+ $data;
+        $this->defaultData = array_merge($this->defaultData, $data);
     }
 
     public function addViewPath(string $viewPath): void
@@ -40,6 +42,21 @@ class SmartyEngine implements TemplateEngine
         return $this->engine();
     }
 
+    /**
+     * @param array<string,mixed> $data
+     * @throws PathException
+     */
+    public function render(string $template, array $data = []): string
+    {
+        $template = str_replace('.', '/', $template) . '.tpl';
+        $variables = array_merge($this->defaultData, $data);
+
+        // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
+        return $this->engine()->fetch($template, $variables);
+
+        // todo: padronizar throw new PathException('View not found: ' . $template);
+    }
+
     private function engine(): Smarty
     {
         if ($this->instance !== null) {
@@ -49,7 +66,7 @@ class SmartyEngine implements TemplateEngine
         $smarty = new Smarty();
 
         $smarty->debugging = true;
-        
+
         if ($this->viewPaths === []) {
             throw new PathException('No view path was added.');
         }
@@ -57,9 +74,9 @@ class SmartyEngine implements TemplateEngine
         foreach ($this->viewPaths as $viewPath) {
             $smarty->addTemplateDir($viewPath);
         }
-        
+
         if ($this->cachePath !== '') {
-            $smarty->caching = true;
+            $smarty->caching = Smarty::CACHING_LIFETIME_SAVED;
             $smarty->cache_lifetime = 120;
 
             $smarty->setCompileDir($this->cachePath . DIRECTORY_SEPARATOR . 'compiled');
@@ -72,20 +89,4 @@ class SmartyEngine implements TemplateEngine
 
         return $this->instance;
     }
-
-    /**
-     * @param array<string,mixed> $data
-     * @throws ViewPathException
-     */
-    public function render(string $template, array $data = []): string
-    {
-        $template = str_replace('.', '/', $template) . '.tpl';
-        $variables = array_merge($this->defaultData, $data);
-
-        // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
-        return $this->engine()->fetch($template, $variables);
-
-        // todo: padronizar throw new PathException('View not found: ' . $template);
-    }
 }
-

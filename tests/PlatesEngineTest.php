@@ -24,12 +24,11 @@ class PlatesEngineTest extends TestCase
     public function render(): void
     {
         $engine = new PlatesEngine();
-        $engine->addViewPath(__DIR__.'/Stubs/PlatesOne');
-        $engine->addViewPath(__DIR__.'/Stubs/PlatesTwo');
-        $engine->setCachePath(__DIR__.'/Stubs/PlatesCache');        
+        $engine->addViewPath(__DIR__ . '/Stubs/PlatesOne');
+        $engine->addViewPath(__DIR__ . '/Stubs/PlatesTwo');
+        $engine->setCachePath(__DIR__ . '/Stubs/PlatesCache');
 
         $this->assertSame('Hello, Ricardo!', $engine->render('folder.hello', ['name' => 'Ricardo']));
         $this->assertSame('Bye, Ricardo!', $engine->render('folder.bye', ['name' => 'Ricardo']));
     }
 }
-

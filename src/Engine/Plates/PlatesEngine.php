@@ -12,15 +12,19 @@ class PlatesEngine implements TemplateEngine
 {
     private ?Engine $instance = null;
 
+    /** @var array<string,mixed> $defaultData */
     private array $defaultData = [];
 
+    /** @var array<string> $viewPaths */
     private array $viewPaths = [];
 
+    /** @var array<string,string> $namespaceList */
     private array $namespaceList = [];
 
+    /** @param array<string,mixed> $data */
     public function addDefaultData(array $data): void
     {
-        $this->defaultData =+ $data;
+        $this->defaultData = array_merge($this->defaultData, $data);
     }
 
     public function addViewPath(string $viewPath): void
@@ -38,6 +42,28 @@ class PlatesEngine implements TemplateEngine
     public function getEngine(): mixed
     {
         return $this->engine();
+    }
+
+    /**
+     * @param array<string,mixed> $data
+     * @throws PathException
+     */
+    public function render(string $template, array $data = []): string
+    {
+        // fabrica o motor de template para a lista de namespaces existirem
+        $this->engine();
+
+        $template = str_replace('.', '/', $template);
+        $variables = array_merge($this->defaultData, $data);
+
+        // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
+        foreach ($this->namespaceList as $namespace => $path) {
+            if (file_exists($path . '/' . $template . '.tpl') === true) {
+                return $this->engine()->render($namespace . '::' . $template, $variables);
+            }
+        }
+
+        throw new PathException('View not found: ' . $template);
     }
 
     private function engine(): Engine
@@ -64,27 +90,5 @@ class PlatesEngine implements TemplateEngine
         $this->instance = $plates;
 
         return $this->instance;
-    }
-
-    /**
-     * @param array<string,mixed> $data
-     * @throws ViewPathException
-     */
-    public function render(string $template, array $data = []): string
-    {
-        // fabrica o motor de template para a lista de namespaces existirem
-        $this->engine(); 
-
-        $template = str_replace('.', '/', $template);
-        $variables = array_merge($this->defaultData, $data);
-
-        // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
-        foreach ($this->namespaceList as $namespace => $path) {
-            if (file_exists($path . '/' . $template . '.tpl') === true) {
-                return $this->engine()->render($namespace . '::' . $template, $variables);    
-            }
-        }
-
-        throw new PathException('View not found: ' . $template);
     }
 }

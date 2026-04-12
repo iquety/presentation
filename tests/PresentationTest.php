@@ -16,8 +16,7 @@ class PresentationTest extends TestCase
         $engine->method('render')->willReturn('Hello World');
 
         $presentation = new Presentation($engine);
-        
+
         $this->assertSame('Hello World', $presentation->render('hello-world', []));
     }
 }
-

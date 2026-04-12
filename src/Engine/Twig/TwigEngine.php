@@ -15,14 +15,17 @@ class TwigEngine implements TemplateEngine
     private ?Environment $instance = null;
 
     private string $cachePath = '';
-    
+
+    /** @var array<string, mixed> $defaultData */
     private array $defaultData = [];
-    
+
+    /** @var array<string> $viewPaths */
     private array $viewPaths = [];
 
+    /** @param array<string, mixed> $data */
     public function addDefaultData(array $data): void
     {
-        $this->defaultData =+ $data;
+        $this->defaultData = array_merge($this->defaultData, $data);
     }
 
     public function addViewPath(string $viewPath): void
@@ -42,12 +45,27 @@ class TwigEngine implements TemplateEngine
         return $this->engine();
     }
 
+    /**
+     * @param array<string,mixed> $data
+     * @throws PathException
+     */
+    public function render(string $template, array $data = []): string
+    {
+        $template = str_replace('.', '/', $template) . '.twig';
+        $variables = array_merge($this->defaultData, $data);
+
+        // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
+        return $this->engine()->render($template, $variables);
+
+        // todo: padronizar throw new PathException('View not found: ' . $template);
+    }
+
     private function engine(): Environment
     {
         if ($this->instance !== null) {
             return $this->instance;
         }
-        
+
         if ($this->viewPaths === []) {
             throw new PathException('No view path was added.');
         }
@@ -70,20 +88,4 @@ class TwigEngine implements TemplateEngine
 
         return $this->instance;
     }
-
-    /**
-     * @param array<string,mixed> $data
-     * @throws PathException
-     */
-    public function render(string $template, array $data = []): string
-    {
-        $template = str_replace('.', '/', $template) . '.twig';
-        $variables = array_merge($this->defaultData, $data);
-
-        // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
-        return $this->engine()->render($template, $variables);
-
-        // todo: padronizar throw new PathException('View not found: ' . $template);
-    }
 }
-

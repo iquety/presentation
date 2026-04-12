@@ -52,7 +52,7 @@
         "coverage": "vendor/bin/phpunit --coverage-html coverage",
         "mess": [
             "phpmd ./src ansi cleancode,codesize,unusedcode,naming,design,controversial",
-            "phpmd ./tests ansi cleancode,codesize,unusedcode,naming,design,controversial"
+            "phpmd ./tests ansi cleancode,codesize,unusedcode,naming,design,controversial --exclude tests/Stubs"
         ],
         "stan": [
             "phpstan analyse --level=8 src",
