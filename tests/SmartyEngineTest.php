@@ -26,9 +26,10 @@ class SmartyEngineTest extends TestCase
         $engine = new SmartyEngine();
         $engine->addViewPath(__DIR__.'/Stubs/SmartyOne');
         $engine->addViewPath(__DIR__.'/Stubs/SmartyTwo');
+        $engine->setCachePath(__DIR__.'/Stubs/SmartyCache');
 
-        $this->assertSame('Hello, Ricardo!', $engine->render('hello', ['name' => 'Ricardo']));
-        $this->assertSame('Bye, Ricardo!', $engine->render('bye', ['name' => 'Ricardo']));
+        $this->assertSame('Hello, Ricardo!', $engine->render('folder.hello', ['name' => 'Ricardo']));
+        $this->assertSame('Bye, Ricardo!', $engine->render('folder.bye', ['name' => 'Ricardo']));
     }
 }
 

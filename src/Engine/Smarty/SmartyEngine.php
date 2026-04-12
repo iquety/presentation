@@ -6,28 +6,18 @@ namespace Iquety\Presentation\Engine\Smarty;
 
 use Iquety\Presentation\Engine\TemplateEngine;
 use Iquety\Presentation\Engine\PathException;
+use PhpParser\Node\Scalar\MagicConst\Dir;
 use Smarty\Smarty;
-use Twig\Environment;
-use Twig\Extension\DebugExtension;
-use Twig\Loader\FilesystemLoader;
 
 class SmartyEngine implements TemplateEngine
 {
-    private bool $debug = false;
-
     private ?Smarty $instance = null;
 
-    private array $viewPaths = [];
-
     private string $cachePath = '';
-
-    private int $cacheLifetime = 120;
-
-    private string $compilePath = '';
-
-    private string $configPath = '';
-
+    
     private array $defaultData = [];
+    
+    private array $viewPaths = [];
 
     public function addDefaultData(array $data): void
     {
@@ -39,26 +29,17 @@ class SmartyEngine implements TemplateEngine
         $this->viewPaths[] = $viewPath;
     }
 
-    public function enableDebugging(): void
-    {
-        $this->debug = true;
-    }
-
-    public function setCachePath(string $cachePath, int $lifetime): void
+    public function setCachePath(string $cachePath): void
     {
         $this->cachePath = $cachePath;
     }
 
-    public function setConfigPath(string $configPath): void
+    /** @return Smarty */
+    public function getEngine(): mixed
     {
-        $this->configPath = $configPath;
+        return $this->engine();
     }
 
-    public function setCompilePath(string $compilePath): void
-    {
-        $this->compilePath = $compilePath;
-    }
-    
     private function engine(): Smarty
     {
         if ($this->instance !== null) {
@@ -67,35 +48,22 @@ class SmartyEngine implements TemplateEngine
 
         $smarty = new Smarty();
 
-        $smarty->debugging = $this->debug;
+        $smarty->debugging = true;
         
-        // diretórios obrigatórios
-
         if ($this->viewPaths === []) {
             throw new PathException('No view path was added.');
-        }
-
-        if ($this->compilePath === []) {
-            throw new PathException('The compile path has not been set.');
         }
 
         foreach ($this->viewPaths as $viewPath) {
             $smarty->addTemplateDir($viewPath);
         }
         
-        $smarty->setCompileDir($this->compilePath);
-
-        // diretórios opcionais
-
         if ($this->cachePath !== '') {
             $smarty->caching = true;
-            $smarty->cache_lifetime = $this->cacheLifetime;
+            $smarty->cache_lifetime = 120;
 
-            $smarty->setCacheDir($this->cachePath);
-        }
-
-        if ($this->configPath !== '') {
-            $smarty->setConfigDir($this->configPath);
+            $smarty->setCompileDir($this->cachePath . DIRECTORY_SEPARATOR . 'compiled');
+            $smarty->setCacheDir($this->cachePath . DIRECTORY_SEPARATOR . 'cached');
         }
 
 
@@ -110,9 +78,10 @@ class SmartyEngine implements TemplateEngine
      */
     public function render(string $template, array $data = []): string
     {
+        $template = str_replace('.', '/', $template) . '.tpl';
         $variables = array_merge($this->defaultData, $data);
 
-        return $this->engine()->fetch($template .'.tpl', $variables);
+        return $this->engine()->fetch($template, $variables);
     }
 }
 
