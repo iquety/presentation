@@ -7,3 +7,11 @@ coverage/
 vendor/
 tests/Stubs/BladeCache/*
 !tests/Stubs/BladeCache/.gitkeep
+tests/Stubs/LatteCache/*
+!tests/Stubs/LatteCache/.gitkeep
+tests/Stubs/MustacheCache/*
+!tests/Stubs/MustacheCache/.gitkeep
+tests/Stubs/SmartyCache/*
+!tests/Stubs/SmartyCache/.gitkeep
+tests/Stubs/TwigCache/*
+!tests/Stubs/TwigCache/.gitkeep
