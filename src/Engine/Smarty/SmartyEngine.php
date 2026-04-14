@@ -58,7 +58,7 @@ class SmartyEngine implements TemplateEngine
             return $this->engine()->fetch($template, $variables);
         } catch (Exception $exception) {
             throw new ViewException(sprintf('Unable to find template "%s"', $template), 0, $exception);
-        }   
+        }
     }
 
     private function engine(): Smarty

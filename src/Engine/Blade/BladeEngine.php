@@ -55,7 +55,7 @@ class BladeEngine implements TemplateEngine
         if ($this->viewPaths === []) {
             throw new PathException('No view path was added.');
         }
-        
+
         try {
             // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
             return $this->engine()->run($template, $variables);

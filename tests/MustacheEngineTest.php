@@ -21,7 +21,7 @@ class MustacheEngineTest extends TestCase
 
         $engine->render('ops', []);
     }
-    
+
     /** @test */
     public function renderViewPathException(): void
     {
