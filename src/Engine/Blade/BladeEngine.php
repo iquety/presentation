@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Iquety\Presentation\Engine\Blade;
 
 use eftec\bladeone\BladeOne;
+use Exception;
 use Iquety\Presentation\Engine\TemplateEngine;
 use Iquety\Presentation\Engine\PathException;
+use Iquety\Presentation\Engine\ViewException;
 
 class BladeEngine implements TemplateEngine
 {
@@ -50,10 +52,16 @@ class BladeEngine implements TemplateEngine
     {
         $variables = array_merge($this->defaultData, $data);
 
-        // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
-        return $this->engine()->run($template, $variables);
-
-        // todo: padronizar throw new PathException('View not found: ' . $template);
+        if ($this->viewPaths === []) {
+            throw new PathException('No view path was added.');
+        }
+        
+        try {
+            // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
+            return $this->engine()->run($template, $variables);
+        } catch (Exception $exception) {
+            throw new ViewException(sprintf('Unable to find template "%s.blade.php"', $template), 0, $exception);
+        }
     }
 
     private function engine(): BladeOne
@@ -62,14 +70,9 @@ class BladeEngine implements TemplateEngine
             return $this->instance;
         }
 
-        if ($this->viewPaths === []) {
-            throw new PathException('No view path was added.');
-        }
-
         $blade = new BladeOne();
         $blade->pipeEnable   = true;
         $blade->throwOnError = true;
-        // $blade->setMode(BladeOne::MODE_AUTO);
         $blade->setPath($this->viewPaths, null);
 
         if ($this->cachePath !== '') {

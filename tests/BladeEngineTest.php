@@ -6,9 +6,22 @@ namespace Tests;
 
 use Iquety\Presentation\Engine\Blade\BladeEngine;
 use Iquety\Presentation\Engine\PathException;
+use Iquety\Presentation\Engine\ViewException;
 
 class BladeEngineTest extends TestCase
 {
+    /** @test */
+    public function viewNotFound(): void
+    {
+        $this->expectException(ViewException::class);
+        $this->expectExceptionMessage('Unable to find template "ops.blade.php"');
+
+        $engine = new BladeEngine();
+        $engine->addViewPath(__DIR__ . '/Stubs/BladeOne');
+
+        $engine->render('ops', []);
+    }
+    
     /** @test */
     public function renderViewPathException(): void
     {
@@ -17,7 +30,7 @@ class BladeEngineTest extends TestCase
 
         $engine = new BladeEngine();
 
-        $engine->render('hello', []);
+        $engine->render('folder.hello', []);
     }
 
     /** @test */
