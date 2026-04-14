@@ -6,9 +6,22 @@ namespace Tests;
 
 use Iquety\Presentation\Engine\PathException;
 use Iquety\Presentation\Engine\Smarty\SmartyEngine;
+use Iquety\Presentation\Engine\ViewException;
 
 class SmartyEngineTest extends TestCase
 {
+    /** @test */
+    public function viewNotFound(): void
+    {
+        $this->expectException(ViewException::class);
+        $this->expectExceptionMessage('Unable to find template "ops.tpl"');
+
+        $engine = new SmartyEngine();
+        $engine->addViewPath(__DIR__ . '/Stubs/SmartyOne');
+
+        $engine->render('ops', []);
+    }
+
     /** @test */
     public function renderViewPathException(): void
     {

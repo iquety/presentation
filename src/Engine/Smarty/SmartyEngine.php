@@ -6,6 +6,8 @@ namespace Iquety\Presentation\Engine\Smarty;
 
 use Iquety\Presentation\Engine\TemplateEngine;
 use Iquety\Presentation\Engine\PathException;
+use Iquety\Presentation\Engine\ViewException;
+use Smarty\Exception;
 use Smarty\Smarty;
 
 class SmartyEngine implements TemplateEngine
@@ -51,10 +53,12 @@ class SmartyEngine implements TemplateEngine
         $template = str_replace('.', '/', $template) . '.tpl';
         $variables = array_merge($this->defaultData, $data);
 
-        // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
-        return $this->engine()->fetch($template, $variables);
-
-        // todo: padronizar throw new PathException('View not found: ' . $template);
+        try {
+            // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
+            return $this->engine()->fetch($template, $variables);
+        } catch (Exception $exception) {
+            throw new ViewException(sprintf('Unable to find template "%s"', $template), 0, $exception);
+        }   
     }
 
     private function engine(): Smarty
