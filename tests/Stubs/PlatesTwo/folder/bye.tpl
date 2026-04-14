@@ -1,1 +1,1 @@
-Bye, <?=$this->e($name)?>!
+Bye, <?=$this->e($name)?> <?=$this->e($lastName)?>!

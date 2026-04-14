@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Iquety\Presentation\Engine\Plates;
 
+use Iquety\Presentation\Engine\EngineException;
 use Iquety\Presentation\Engine\TemplateEngine;
 use Iquety\Presentation\Engine\PathException;
 use Iquety\Presentation\Engine\ViewException;
@@ -11,76 +12,27 @@ use League\Plates\Engine;
 
 class PlatesEngine implements TemplateEngine
 {
-    private ?Engine $instance = null;
-
-    /** @var array<string,mixed> $defaultData */
-    private array $defaultData = [];
-
-    /** @var array<string> $viewPaths */
-    private array $viewPaths = [];
+    private ?Engine $engine = null;
 
     /** @var array<string,string> $namespaceList */
     private array $namespaceList = [];
 
-    /** @param array<string,mixed> $data */
-    public function addDefaultData(array $data): void
-    {
-        $this->defaultData = array_merge($this->defaultData, $data);
-    }
-
-    public function addViewPath(string $viewPath): void
-    {
-        $this->viewPaths[] = $viewPath;
-    }
-
-    /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
-    public function setCachePath(string $cachePath): void
-    {
-        // o Plates não tem suporte a cache, mas o método é necessário para a interface
-    }
-
-    /** @return Engine */
-    public function getEngine(): mixed
-    {
-        return $this->engine();
-    }
-
     /**
-     * @param array<string,mixed> $data
+     * @param array<string> $viewPathList
+     * @return Environment
      * @throws PathException
+     * @return TemplateEngine
      */
-    public function render(string $template, array $data = []): string
+    public function bootEngine(array $viewPathList, string $cachePath): TemplateEngine
     {
-        // fabrica o motor de template para a lista de namespaces existirem
-        $this->engine();
-
-        $template = str_replace('.', '/', $template);
-        $variables = array_merge($this->defaultData, $data);
-
-        // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
-        foreach ($this->namespaceList as $namespace => $path) {
-            if (file_exists($path . '/' . $template . '.tpl') === true) {
-                return $this->engine()->render($namespace . '::' . $template, $variables);
-            }
-        }
-
-        throw new ViewException(sprintf('Unable to find template "%s.tpl"', $template));
-    }
-
-    private function engine(): Engine
-    {
-        if ($this->instance !== null) {
-            return $this->instance;
-        }
-
-        if ($this->viewPaths === []) {
-            throw new PathException('No view path was added.');
+        if ($viewPathList === []) {
+            throw new PathException('No template paths were specified.');
         }
 
         $plates = new Engine();
         $plates->setFileExtension('tpl');
 
-        foreach ($this->viewPaths as $viewPath) {
+        foreach ($viewPathList as $viewPath) {
             $namespace = strtolower(basename($viewPath));
 
             $this->namespaceList[$namespace] = $viewPath;
@@ -88,8 +40,33 @@ class PlatesEngine implements TemplateEngine
             $plates->addFolder($namespace, $viewPath, true);
         }
 
-        $this->instance = $plates;
+        $this->engine = $plates;
 
-        return $this->instance;
+        return $this;
+    }
+
+    /**
+     * @param array<string,mixed> $data
+     * @param array<string,mixed> $defaultData
+     * @throws EngineException
+     * @throws ViewException
+     */
+    public function render(string $template, array $data = [], array $defaultData = []): string
+    {
+        if ($this->engine === null) {
+            throw new EngineException('The engine was not booted.');
+        }
+
+        $template = str_replace('.', '/', $template);
+        $variables = array_merge($defaultData, $data);
+
+        // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
+        foreach ($this->namespaceList as $namespace => $path) {
+            if (file_exists($path . '/' . $template . '.tpl') === true) {
+                return $this->engine->render($namespace . '::' . $template, $variables);
+            }
+        }
+
+        throw new ViewException(sprintf('Unable to find template "%s.tpl"', $template));
     }
 }
