@@ -1,6 +1,6 @@
 # Índice da documentação
 
-[◂ Voltar para o leiame](leiame.md) | [Evoluindo a biblioteca ▸](99-evoluindo.md)
+[◂ Voltar para o leiame](leiame.md) | [Como usar ▸](01-como-usar.md)
 -- | --
 
 ## Introdução
@@ -9,4 +9,5 @@ Bem vindo(a) à documentação da **Iquety Http**. Aqui você encontra as inform
 
 ## Conteúdo
 
+- [Como usar](01-como-usar.md)
 - [Evoluindo a biblioteca](99-evoluindo.md)

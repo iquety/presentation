@@ -1,7 +1,7 @@
 # Evoluindo a biblioteca
 
-[◂ Índice da documentação ▸](indice.md)
---
+[◂ Como usar](01-como-usar.md) | [Índice da documentação ▸](indice.md)
+-- | --
 
 ## 1. Infraestrutura
 
@@ -83,5 +83,5 @@ gerar a documentação navegável no diretório `docs`:
 composer docmap
 ```
 
-[◂ Índice da documentação ▸](indice.md)
---
+[◂ Como usar](01-como-usar.md) | [Índice da documentação ▸](indice.md)
+-- | --

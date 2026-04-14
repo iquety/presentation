@@ -1,6 +1,6 @@
 # Documentation index
 
-[◂ Back to readme](../../readme.md) | [Evolving the library ▸](99-evolution.md)
+[◂ Back to readme](../../readme.md) | [How to use ▸](01-how-to-use.md)
 -- | --
 
 ## Introduction
@@ -9,4 +9,5 @@ Welcome to the **Iquety Presentation** documentation. Here you will find the nec
 
 ## Contents
 
+- [How to use](01-how-to-use.md)
 - [Evolving the library](99-evolution.md)

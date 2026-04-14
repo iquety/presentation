@@ -1,7 +1,7 @@
 # Evolving the library
 
-[◂ Documentation index ▸](index.md)
---
+[◂ How to use](01-how-to-use.md) | [Documentation index ▸](index.md)
+-- | --
 
 ## 1. Infrastructure
 
@@ -83,5 +83,5 @@ browsable documentation in the `docs` directory:
 composer docmap
 ```
 
-[◂ Documentation index ▸](index.md)
---
+[◂ How to use](01-how-to-use.md) | [Documentation index ▸](index.md)
+-- | --
