@@ -12,6 +12,7 @@
         "league/plates": "^3.6",
         "mustache/mustache": "^3.0",
         "smarty/smarty": "^5.8",
+        "symfony/var-dumper": "^6.4",
         "twig/twig": "^3.24"
     },
     "require-dev": {

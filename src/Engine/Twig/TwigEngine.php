@@ -7,6 +7,8 @@ namespace Iquety\Presentation\Engine\Twig;
 use Iquety\Presentation\Engine\EngineException;
 use Iquety\Presentation\Engine\TemplateEngine;
 use Iquety\Presentation\Engine\PathException;
+use Iquety\Presentation\Engine\Twig\Tags\CannotTokenParser;
+use Iquety\Presentation\Engine\Twig\Tags\CanTokenParser;
 use Iquety\Presentation\Engine\ViewException;
 use Twig\Environment;
 use Twig\Error\LoaderError;
@@ -41,6 +43,9 @@ class TwigEngine implements TemplateEngine
         $twig = new Environment($loader, $settings);
 
         $twig->addExtension(new DebugExtension());
+
+        $twig->addTokenParser(new CanTokenParser());
+        $twig->addTokenParser(new CannotTokenParser());
 
         $this->engine = $twig;
 
