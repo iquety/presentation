@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Iquety\Presentation\Engine\Smarty;
 
+use Iquety\Presentation\Engine\EngineException;
 use Iquety\Presentation\Engine\TemplateEngine;
 use Iquety\Presentation\Engine\PathException;
 use Iquety\Presentation\Engine\ViewException;
@@ -12,85 +13,64 @@ use Smarty\Smarty;
 
 class SmartyEngine implements TemplateEngine
 {
-    private ?Smarty $instance = null;
-
-    private string $cachePath = '';
-
-    /** @var array<string,mixed> $defaultData */
-    private array $defaultData = [];
-
-    /** @var array<string> $viewPaths */
-    private array $viewPaths = [];
-
-    /** @param array<string,mixed> $data */
-    public function addDefaultData(array $data): void
-    {
-        $this->defaultData = array_merge($this->defaultData, $data);
-    }
-
-    public function addViewPath(string $viewPath): void
-    {
-        $this->viewPaths[] = $viewPath;
-    }
-
-    public function setCachePath(string $cachePath): void
-    {
-        $this->cachePath = $cachePath;
-    }
-
-    /** @return Smarty */
-    public function getEngine(): mixed
-    {
-        return $this->engine();
-    }
+    private ?Smarty $engine = null;
 
     /**
-     * @param array<string,mixed> $data
-     * @throws PathException
-     */
-    public function render(string $template, array $data = []): string
+    * @param array<string> $viewPathList
+    * @return Environment
+    * @throws PathException
+    * @return TemplateEngine
+    */
+    public function bootEngine(array $viewPathList, string $cachePath): TemplateEngine
     {
-        $template = str_replace('.', '/', $template) . '.tpl';
-        $variables = array_merge($this->defaultData, $data);
-
-        try {
-            // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
-            return $this->engine()->fetch($template, $variables);
-        } catch (Exception $exception) {
-            throw new ViewException(sprintf('Unable to find template "%s"', $template), 0, $exception);
-        }
-    }
-
-    private function engine(): Smarty
-    {
-        if ($this->instance !== null) {
-            return $this->instance;
+        if ($viewPathList === []) {
+            throw new PathException('No template paths were specified.');
         }
 
         $smarty = new Smarty();
 
         $smarty->debugging = true;
 
-        if ($this->viewPaths === []) {
-            throw new PathException('No view path was added.');
-        }
-
-        foreach ($this->viewPaths as $viewPath) {
+        foreach ($viewPathList as $viewPath) {
             $smarty->addTemplateDir($viewPath);
         }
 
-        if ($this->cachePath !== '') {
+        if ($cachePath !== '') {
             $smarty->caching = Smarty::CACHING_LIFETIME_SAVED;
             $smarty->cache_lifetime = 120;
 
-            $smarty->setCompileDir($this->cachePath . DIRECTORY_SEPARATOR . 'compiled');
-            $smarty->setCacheDir($this->cachePath . DIRECTORY_SEPARATOR . 'cached');
+            $smarty->setCompileDir($cachePath . DIRECTORY_SEPARATOR . 'compiled');
+            $smarty->setCacheDir($cachePath . DIRECTORY_SEPARATOR . 'cached');
         }
 
         // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
 
-        $this->instance = $smarty;
+        $this->engine = $smarty;
 
-        return $this->instance;
+        return $this;
+    }
+
+
+    /**
+     * @param array<string,mixed> $data
+     * @param array<string,mixed> $defaultData
+     * @throws EngineException
+     * @throws ViewException
+     */
+    public function render(string $template, array $data = [], array $defaultData = []): string
+    {
+        if ($this->engine === null) {
+            throw new EngineException('The engine was not booted.');
+        }
+
+        $template = str_replace('.', '/', $template) . '.tpl';
+        $variables = array_merge($defaultData, $data);
+
+        try {
+            // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
+            return $this->engine->fetch($template, $variables);
+        } catch (Exception $exception) {
+            throw new ViewException(sprintf('Unable to find template "%s"', $template), 0, $exception);
+        }
     }
 }
