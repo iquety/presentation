@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Iquety\Presentation\Engine\Twig;
 
+use Iquety\Presentation\Engine\EngineException;
 use Iquety\Presentation\Engine\TemplateEngine;
 use Iquety\Presentation\Engine\PathException;
 use Iquety\Presentation\Engine\ViewException;
@@ -14,82 +15,60 @@ use Twig\Loader\FilesystemLoader;
 
 class TwigEngine implements TemplateEngine
 {
-    private ?Environment $instance = null;
-
-    private string $cachePath = '';
-
-    /** @var array<string, mixed> $defaultData */
-    private array $defaultData = [];
-
-    /** @var array<string> $viewPaths */
-    private array $viewPaths = [];
-
-    /** @param array<string, mixed> $data */
-    public function addDefaultData(array $data): void
-    {
-        $this->defaultData = array_merge($this->defaultData, $data);
-    }
-
-    public function addViewPath(string $viewPath): void
-    {
-        $this->viewPaths[] = $viewPath;
-    }
-
-    public function setCachePath(string $cachePath): void
-    {
-        $this->cachePath = $cachePath;
-    }
-
-
-    /** @return Environment */
-    public function getEngine(): mixed
-    {
-        return $this->engine();
-    }
+    private ?Environment $engine = null;
 
     /**
-     * @param array<string,mixed> $data
+     * @param array<string> $viewPathList
      * @throws PathException
+     * @return TemplateEngine
      */
-    public function render(string $template, array $data = []): string
+    public function bootEngine(array $viewPathList, string $cachePath): TemplateEngine
     {
-        $template = str_replace('.', '/', $template) . '.twig';
-        $variables = array_merge($this->defaultData, $data);
-
-        try {
-            // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
-            return $this->engine()->render($template, $variables);
-        } catch (LoaderError $exception) {
-            throw new ViewException(sprintf('Unable to find template "%s"', $template), 0, $exception);
-        }
-    }
-
-    private function engine(): Environment
-    {
-        if ($this->instance !== null) {
-            return $this->instance;
+        if ($viewPathList === []) {
+            throw new PathException('No template paths were specified.');
         }
 
-        if ($this->viewPaths === []) {
-            throw new PathException('No view path was added.');
-        }
-
-        $loader = new FilesystemLoader($this->viewPaths);
+        $loader = new FilesystemLoader($viewPathList);
 
         $settings = [
             'debug' => true,
         ];
 
-        if ($this->cachePath !== '') {
-            $settings['cache'] = $this->cachePath;
+        if ($cachePath !== '') {
+            $settings['cache'] = $cachePath;
         }
 
         $twig = new Environment($loader, $settings);
 
         $twig->addExtension(new DebugExtension());
 
-        $this->instance = $twig;
+        $this->engine = $twig;
 
-        return $this->instance;
+        return $this;
+    }
+
+    /**
+     * @param array<string,mixed> $data
+     * @param array<string,mixed> $defaultData
+     * @throws EngineException
+     * @throws ViewException
+     */
+    public function render(string $template, array $data = [], array $defaultData = []): string
+    {
+        if ($this->engine === null) {
+            throw new EngineException('The engine was not booted.');
+        }
+
+        $template = str_replace('.', '/', $template) . '.twig';
+        $variables = array_merge($defaultData, $data);
+
+        try {
+            // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
+            return $this->engine->render($template, $variables);
+        } catch (LoaderError $exception) {
+            $message = sprintf('Unable to find template "%s".', $template);
+
+            throw new ViewException($message, 0, $exception);
+        }
     }
 }

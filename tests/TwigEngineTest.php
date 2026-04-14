@@ -4,44 +4,73 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Iquety\Presentation\Engine\Twig\TwigEngine;
+use Iquety\Presentation\Engine\EngineException;
 use Iquety\Presentation\Engine\PathException;
 use Iquety\Presentation\Engine\ViewException;
+use Iquety\Presentation\Engine\Twig\TwigEngine;
 
 class TwigEngineTest extends TestCase
 {
     /** @test */
-    public function viewNotFound(): void
+    public function engineException(): void
+    {
+        $this->expectException(EngineException::class);
+        $this->expectExceptionMessage('The engine was not booted.');
+
+        $engine = new TwigEngine();
+
+        $engine->render('folder.hello', [], []);
+    }
+
+    /** @test */
+    public function pathException(): void
+    {
+        $this->expectException(PathException::class);
+        $this->expectExceptionMessage('No template paths were specified.');
+
+        $engine = new TwigEngine();
+        $engine->bootEngine([], '');
+
+        $engine->render('folder.hello', [], []);
+    }
+
+    /** @test */
+    public function viewException(): void
     {
         $this->expectException(ViewException::class);
         $this->expectExceptionMessage('Unable to find template "ops.twig"');
 
         $engine = new TwigEngine();
-        $engine->addViewPath(__DIR__ . '/Stubs/TwigOne');
+        $engine->bootEngine([__DIR__ . '/Stubs/TwigOne'], '');
 
-        $engine->render('ops', []);
-    }
-
-    /** @test */
-    public function renderException(): void
-    {
-        $this->expectException(PathException::class);
-        $this->expectExceptionMessage('No view path was added.');
-
-        $engine = new TwigEngine();
-
-        $engine->render('folder.hello', []);
+        $engine->render('ops', [], []);
     }
 
     /** @test */
     public function render(): void
     {
-        $engine = new TwigEngine();
-        $engine->addViewPath(__DIR__ . '/Stubs/TwigOne');
-        $engine->addViewPath(__DIR__ . '/Stubs/TwigTwo');
-        $engine->setCachePath(__DIR__ . '/Stubs/TwigCache');
+        $viewPathList = [__DIR__ . '/Stubs/TwigOne', __DIR__ . '/Stubs/TwigTwo'];
+        $cachePath    = __DIR__ . '/Stubs/TwigCache';
 
-        $this->assertSame('Hello, Ricardo!', $engine->render('folder.hello', ['name' => 'Ricardo']));
-        $this->assertSame('Bye, Ricardo!', $engine->render('folder.bye', ['name' => 'Ricardo']));
+        $engine = new TwigEngine();
+        $engine->bootEngine($viewPathList, $cachePath);
+
+        $data        = ['name' => 'Fulano'];
+        $defaultData = ['lastName' => 'de Tal'];
+
+        $this->assertSame('Hello, Fulano de Tal!', $engine->render('folder.hello', $data, $defaultData));
+        $this->assertSame('Bye, Fulano de Tal!', $engine->render('folder.bye', $data, $defaultData));
+
+        // 8d/8d011c124db45d2dbe1358a6f6eeb5c0.php
+        // ef/efd011oc12db45d2dbe1358a6f6eeb99.php
+        $listFiles = $this->listFiles($cachePath);
+
+        foreach ($listFiles as $file) {
+            $permission = fileperms($file);
+            $permissionOctal = decoct($permission);
+            $permissionQuad = substr($permissionOctal, -4);
+
+            $this->assertEquals('0644', $permissionQuad, "The file $file does not have permission 0644.");
+        }
     }
 }

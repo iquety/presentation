@@ -6,18 +6,19 @@ namespace Iquety\Presentation\Engine;
 
 interface TemplateEngine
 {
-    /** @param array<string, mixed> $data */
-    public function addDefaultData(array $data): void;
-
-    public function addViewPath(string $viewPath): void;
-
-    public function setCachePath(string $cachePath): void;
-
-    public function getEngine(): mixed;
+    /**
+     * @param array<string> $viewPathList
+     * @return Environment
+     * @throws PathException
+     * @return TemplateEngine
+     */
+    public function bootEngine(array $viewPathList, string $cachePath): TemplateEngine;
 
     /**
      * @param array<string,mixed> $data
-     * @throws PathException
+     * @param array<string,mixed> $defaultData
+     * @throws EngineException
+     * @throws ViewException
      */
-    public function render(string $template, array $data = []): string;
+    public function render(string $template, array $data = [], array $defaultData = []): string;
 }
