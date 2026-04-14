@@ -33,6 +33,37 @@ abstract class TestCase extends FrameworkTestCase
         }
     }
 
+    /**
+     * @param array<string> &$listFiles
+     * @return array<string>
+     */
+    protected function listFiles(string $path, array & $listFiles = []): array
+    {
+        $fileList = scandir($path, SCANDIR_SORT_NONE);
+
+        if ($fileList === false) {
+            return [];
+        }
+
+        foreach ($fileList as $file) {
+            if ($file === '.' || $file === '..' || $file === '.gitkeep') {
+                continue;
+            }
+
+            $filePath = $path . DIRECTORY_SEPARATOR . $file;
+
+            if (is_dir($filePath) === true) {
+                $this->listFiles($filePath, $listFiles);
+
+                continue;
+            }
+
+            $listFiles[] = $filePath;
+        }
+
+        return $listFiles;
+    }
+
     private function removeFiles(string $path): void
     {
         $fileList = scandir($path, SCANDIR_SORT_NONE);
@@ -60,36 +91,5 @@ abstract class TestCase extends FrameworkTestCase
                 unlink($filePath);
             }
         }
-    }
-
-    /**
-     * @param array<string> &$listFiles
-     * @return array<string>
-     */
-    protected function listFiles(string $path, array & $listFiles = []): array
-    {
-        $fileList = scandir($path, SCANDIR_SORT_NONE);
-
-        if ($fileList === false) {
-            return [];
-        }
-
-        foreach($fileList as $file) {
-            if ($file === '.' || $file === '..' || $file === '.gitkeep') {
-                continue;
-            }
-
-            $filePath = $path . DIRECTORY_SEPARATOR . $file;
-
-            if (is_dir($filePath) === true) {
-                $this->listFiles($filePath, $listFiles);
-
-                continue;
-            }
-
-            $listFiles[] = $filePath;
-        }
-
-        return $listFiles;
     }
 }

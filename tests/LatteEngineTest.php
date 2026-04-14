@@ -68,7 +68,7 @@ class LatteEngineTest extends TestCase
         $listFiles = $this->listFiles($cachePath);
 
         foreach ($listFiles as $file) {
-            $permission = fileperms($file);
+            $permission = (int) fileperms($file);
             $permissionOctal = decoct($permission);
             $permissionQuad = substr($permissionOctal, -4);
 
