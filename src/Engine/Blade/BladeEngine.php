@@ -6,81 +6,60 @@ namespace Iquety\Presentation\Engine\Blade;
 
 use eftec\bladeone\BladeOne;
 use Exception;
+use Iquety\Presentation\Engine\EngineException;
 use Iquety\Presentation\Engine\TemplateEngine;
 use Iquety\Presentation\Engine\PathException;
 use Iquety\Presentation\Engine\ViewException;
 
 class BladeEngine implements TemplateEngine
 {
-    private ?BladeOne $instance = null;
-
-    /** @var array<string,mixed> $defaultData */
-    private array $defaultData = [];
-
-    private string $cachePath = '';
-
-    /** @var array<string> $viewPaths */
-    private array $viewPaths = [];
-
-    /** @param array<string,mixed> $data */
-    public function addDefaultData(array $data): void
-    {
-        $this->defaultData = array_merge($this->defaultData, $data);
-    }
-
-    public function addViewPath(string $viewPath): void
-    {
-        $this->viewPaths[] = $viewPath;
-    }
-
-    public function setCachePath(string $cachePath): void
-    {
-        $this->cachePath = $cachePath;
-    }
-
-    /** @return BladeOne */
-    public function getEngine(): mixed
-    {
-        return $this->engine();
-    }
+    private ?BladeOne $engine = null;
 
     /**
-     * @param array<string,mixed> $data
+     * @param array<string> $viewPathList
+     * @return Environment
      * @throws PathException
+     * @return TemplateEngine
      */
-    public function render(string $template, array $data = []): string
+    public function bootEngine(array $viewPathList, string $cachePath): TemplateEngine
     {
-        $variables = array_merge($this->defaultData, $data);
-
-        if ($this->viewPaths === []) {
-            throw new PathException('No view path was added.');
-        }
-
-        try {
-            // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
-            return $this->engine()->run($template, $variables);
-        } catch (Exception $exception) {
-            throw new ViewException(sprintf('Unable to find template "%s.blade.php"', $template), 0, $exception);
-        }
-    }
-
-    private function engine(): BladeOne
-    {
-        if ($this->instance !== null) {
-            return $this->instance;
+        if ($viewPathList === []) {
+            throw new PathException('No template paths were specified.');
         }
 
         $blade = new BladeOne();
         $blade->pipeEnable   = true;
         $blade->throwOnError = true;
-        $blade->setPath($this->viewPaths, null);
+        $blade->setPath($viewPathList, null);
 
-        if ($this->cachePath !== '') {
-            $blade->setPath($this->viewPaths, $this->cachePath);
+        if ($cachePath !== '') {
+            $blade->setPath($viewPathList, $cachePath);
         }
 
-        $this->instance = $blade;
+        $this->engine = $blade;
 
-        return $this->instance;
+        return $this;
+    }
+
+    /**
+     * @param array<string,mixed> $data
+     * @param array<string,mixed> $defaultData
+     * @throws EngineException
+     * @throws ViewException
+     */
+    public function render(string $template, array $data = [], array $defaultData = []): string
+    {
+        if ($this->engine === null) {
+            throw new EngineException('The engine was not booted.');
+        }
+
+        $variables = array_merge($defaultData, $data);
+
+        try {
+            // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
+            return $this->engine->run($template, $variables);
+        } catch (Exception $exception) {
+            throw new ViewException(sprintf('Unable to find template "%s.blade.php"', $template), 0, $exception);
+        }
     }
 }

@@ -1,1 +1,1 @@
-Bye, {{ $name }}!
+Bye, {{ $name }} {{ $lastName }}!
