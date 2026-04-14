@@ -6,9 +6,22 @@ namespace Tests;
 
 use Iquety\Presentation\Engine\PathException;
 use Iquety\Presentation\Engine\Mustache\MustacheEngine;
+use Iquety\Presentation\Engine\ViewException;
 
 class MustacheEngineTest extends TestCase
 {
+    /** @test */
+    public function viewNotFound(): void
+    {
+        $this->expectException(ViewException::class);
+        $this->expectExceptionMessage('Unable to find template "ops.ms"');
+
+        $engine = new MustacheEngine();
+        $engine->addViewPath(__DIR__ . '/Stubs/MustacheOne');
+
+        $engine->render('ops', []);
+    }
+    
     /** @test */
     public function renderViewPathException(): void
     {
