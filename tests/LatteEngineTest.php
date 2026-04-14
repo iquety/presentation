@@ -6,9 +6,22 @@ namespace Tests;
 
 use Iquety\Presentation\Engine\Latte\LatteEngine;
 use Iquety\Presentation\Engine\PathException;
+use Iquety\Presentation\Engine\ViewException;
 
 class LatteEngineTest extends TestCase
 {
+    /** @test */
+    public function viewNotFound(): void
+    {
+        $this->expectException(ViewException::class);
+        $this->expectExceptionMessage('Unable to find template "ops.latte"');
+
+        $engine = new LatteEngine();
+        $engine->addViewPath(__DIR__ . '/Stubs/LatteOne');
+
+        $engine->render('ops', []);
+    }
+    
     /** @test */
     public function renderViewPathException(): void
     {

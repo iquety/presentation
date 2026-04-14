@@ -6,7 +6,9 @@ namespace Iquety\Presentation\Engine\Latte;
 
 use Iquety\Presentation\Engine\TemplateEngine;
 use Iquety\Presentation\Engine\PathException;
+use Iquety\Presentation\Engine\ViewException;
 use Latte\Engine;
+use Latte\TemplateNotFoundException;
 
 class LatteEngine implements TemplateEngine
 {
@@ -51,8 +53,12 @@ class LatteEngine implements TemplateEngine
         $template = str_replace('.', '/', $template) . '.latte';
         $variables = array_merge($this->defaultData, $data);
 
-        // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
-        return $this->engine()->renderToString($template, $variables);
+        try {
+            // todo: modificar o cache é modificado para @chmod($key, 0666 & ~umask());
+            return $this->engine()->renderToString($template, $variables);
+        } catch (TemplateNotFoundException $exception) {
+            throw new ViewException(sprintf('Unable to find template "%s"', $template), 0, $exception);
+        }
 
         // todo: padronizar throw new PathException('View not found: ' . $template);
     }
