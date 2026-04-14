@@ -6,9 +6,22 @@ namespace Tests;
 
 use Iquety\Presentation\Engine\PathException;
 use Iquety\Presentation\Engine\Plates\PlatesEngine;
+use Iquety\Presentation\Engine\ViewException;
 
 class PlatesEngineTest extends TestCase
 {
+    /** @test */
+    public function viewNotFound(): void
+    {
+        $this->expectException(ViewException::class);
+        $this->expectExceptionMessage('Unable to find template "ops.tpl"');
+
+        $engine = new PlatesEngine();
+        $engine->addViewPath(__DIR__ . '/Stubs/PlatesOne');
+
+        $engine->render('ops', []);
+    }
+    
     /** @test */
     public function renderViewPathException(): void
     {

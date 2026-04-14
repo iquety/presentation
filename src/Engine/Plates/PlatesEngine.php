@@ -6,6 +6,7 @@ namespace Iquety\Presentation\Engine\Plates;
 
 use Iquety\Presentation\Engine\TemplateEngine;
 use Iquety\Presentation\Engine\PathException;
+use Iquety\Presentation\Engine\ViewException;
 use League\Plates\Engine;
 
 class PlatesEngine implements TemplateEngine
@@ -63,7 +64,7 @@ class PlatesEngine implements TemplateEngine
             }
         }
 
-        throw new PathException('View not found: ' . $template);
+        throw new ViewException(sprintf('Unable to find template "%s.tpl"', $template));
     }
 
     private function engine(): Engine
