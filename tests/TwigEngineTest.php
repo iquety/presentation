@@ -6,9 +6,22 @@ namespace Tests;
 
 use Iquety\Presentation\Engine\Twig\TwigEngine;
 use Iquety\Presentation\Engine\PathException;
+use Iquety\Presentation\Engine\ViewException;
 
 class TwigEngineTest extends TestCase
 {
+    /** @test */
+    public function viewNotFound(): void
+    {
+        $this->expectException(ViewException::class);
+        $this->expectExceptionMessage('Unable to find template "ops.twig"');
+
+        $engine = new TwigEngine();
+        $engine->addViewPath(__DIR__ . '/Stubs/TwigOne');
+
+        $engine->render('ops', []);
+    }
+
     /** @test */
     public function renderException(): void
     {
@@ -17,7 +30,7 @@ class TwigEngineTest extends TestCase
 
         $engine = new TwigEngine();
 
-        $engine->render('hello.html', []);
+        $engine->render('folder.hello', []);
     }
 
     /** @test */

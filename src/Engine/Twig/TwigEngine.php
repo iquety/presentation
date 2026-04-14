@@ -6,7 +6,9 @@ namespace Iquety\Presentation\Engine\Twig;
 
 use Iquety\Presentation\Engine\TemplateEngine;
 use Iquety\Presentation\Engine\PathException;
+use Iquety\Presentation\Engine\ViewException;
 use Twig\Environment;
+use Twig\Error\LoaderError;
 use Twig\Extension\DebugExtension;
 use Twig\Loader\FilesystemLoader;
 
@@ -54,10 +56,12 @@ class TwigEngine implements TemplateEngine
         $template = str_replace('.', '/', $template) . '.twig';
         $variables = array_merge($this->defaultData, $data);
 
-        // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
-        return $this->engine()->render($template, $variables);
-
-        // todo: padronizar throw new PathException('View not found: ' . $template);
+        try {
+            // internamente o cache é modificado para @chmod($key, 0666 & ~umask());
+            return $this->engine()->render($template, $variables);
+        } catch (LoaderError $exception) {
+            throw new ViewException(sprintf('Unable to find template "%s"', $template), 0, $exception);
+        }
     }
 
     private function engine(): Environment
