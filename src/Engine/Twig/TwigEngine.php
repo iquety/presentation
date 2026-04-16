@@ -19,6 +19,13 @@ class TwigEngine implements TemplateEngine
 {
     private ?Environment $engine = null;
 
+    private bool $debugMode = false;
+
+    public function enableDebug(): void
+    {
+        $this->debugMode = true;
+    }
+
     /**
      * @param array<string> $viewPathList
      * @throws PathException
@@ -32,9 +39,11 @@ class TwigEngine implements TemplateEngine
 
         $loader = new FilesystemLoader($viewPathList);
 
-        $settings = [
-            'debug' => true,
-        ];
+        $settings = [];
+
+        if ($this->debugMode === true) {
+            $settings['debug'] = true;
+        }
 
         if ($cachePath !== '') {
             $settings['cache'] = $cachePath;
@@ -42,7 +51,9 @@ class TwigEngine implements TemplateEngine
 
         $twig = new Environment($loader, $settings);
 
-        $twig->addExtension(new DebugExtension());
+        if ($this->debugMode === true) {
+            $twig->addExtension(new DebugExtension());
+        }
 
         $twig->addTokenParser(new CanTokenParser());
         $twig->addTokenParser(new CannotTokenParser());

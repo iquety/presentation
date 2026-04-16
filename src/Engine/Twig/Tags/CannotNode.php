@@ -12,7 +12,7 @@ use Twig\Node\Node;
 use Twig\TwigTest;
 
 #[YieldReady]
-class CanNode extends Node
+class CannotNode extends Node
 {
     public function __construct(Node $tests, ?Node $else, int $lineno)
     {
@@ -37,14 +37,15 @@ class CanNode extends Node
 
         $compiler->addDebugInfo($this);
         $compiler
-            ->write('if (')
-            ->raw("  isset(\$context['$permission']) === true\n")
-            ->raw("  && (\n")
-            ->raw("    \$context['$permission'] === 'false'")
-            ->raw("    || \$context['$permission'] === false")
-            ->raw("    || \$context['$permission'] === '0'")
-            ->raw("    || \$context['$permission'] === 0")
-            ->raw("  )\n")
+            ->write("if (")
+            ->raw("  isset(\$context['$permission'])\n")
+            ->raw("  && (")
+            ->raw("  \$context['$permission'] === ''")
+            ->raw("  || \$context['$permission'] === 'false'")
+            ->raw("  || \$context['$permission'] === false")
+            ->raw("  || \$context['$permission'] === '0'")
+            ->raw("  || \$context['$permission'] === 0")
+            ->raw("  )")
             ->raw(") {\n")
             ->indent();
 

@@ -6,6 +6,8 @@ namespace Iquety\Presentation\Engine;
 
 interface TemplateEngine
 {
+    public function enableDebug(): void;
+
     /**
      * @param array<string> $viewPathList
      * @return Environment

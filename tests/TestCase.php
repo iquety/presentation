@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Exception;
 use PHPUnit\Framework\TestCase as FrameworkTestCase;
 
 /**
@@ -12,7 +13,17 @@ use PHPUnit\Framework\TestCase as FrameworkTestCase;
  */
 abstract class TestCase extends FrameworkTestCase
 {
+    public function setUp(): void
+    {
+        $this->cleanUp();
+    }
+
     public function tearDown(): void
+    {
+        $this->cleanUp();
+    }
+
+    public function cleanUp(): void
     {
         $stubsPath = realpath(__DIR__ . '/Stubs');
 
@@ -89,6 +100,10 @@ abstract class TestCase extends FrameworkTestCase
 
             if (is_file($filePath) === true) {
                 unlink($filePath);
+            }
+
+            if (is_file($filePath) === true) {
+                throw new Exception('Arquivo ' . $filePath . ' não foi removido');
             }
         }
     }

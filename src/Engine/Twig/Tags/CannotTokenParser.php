@@ -41,7 +41,7 @@ final class CannotTokenParser extends AbstractTokenParser
 
         $stream->expect(Token::BLOCK_END_TYPE);
 
-        return new CanNode(new Nodes($tests), $else, $lineno);
+        return new CannotNode(new Nodes($tests), $else, $lineno);
     }
 
     public function decideIfFork(Token $token): bool
