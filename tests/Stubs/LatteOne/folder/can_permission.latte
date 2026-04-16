@@ -1,0 +1,1 @@
+{can 'show-hi'}I can say hi{/can} and {can 'show-bye'}I can say bye{/can}

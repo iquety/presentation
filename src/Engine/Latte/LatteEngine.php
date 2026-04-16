@@ -15,6 +15,13 @@ class LatteEngine implements TemplateEngine
 {
     private ?Engine $engine = null;
 
+    private bool $debugMode = false;
+
+    public function enableDebug(): void
+    {
+        $this->debugMode = true;
+    }
+    
     /**
      * @param array<string> $viewPathList
      * @return Environment
@@ -35,6 +42,8 @@ class LatteEngine implements TemplateEngine
         if ($cachePath !== '') {
             $latte->setCacheDirectory($cachePath);
         }
+
+        $latte->addExtension(new Extension());
 
         $this->engine = $latte;
 
