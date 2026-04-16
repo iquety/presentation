@@ -22,7 +22,7 @@ class TwigPermissionsTest extends TestCase
         string $renderedTemplate
     ): void {
         $engine = new TwigEngine();
-        $engine->bootEngine([__DIR__ . '/Stubs/TwigOne'], '');
+        $engine->bootEngine([__DIR__ . '/Stubs/TwigOne'], __DIR__ . '/Stubs/TwigCache');
 
         $data = [];
 
@@ -52,7 +52,7 @@ class TwigPermissionsTest extends TestCase
         string $renderedTemplate
     ): void {
         $engine = new TwigEngine();
-        $engine->bootEngine([__DIR__ . '/Stubs/TwigOne'], '');
+        $engine->bootEngine([__DIR__ . '/Stubs/TwigOne'], __DIR__ . '/Stubs/TwigCache');
 
         $data = [];
 
