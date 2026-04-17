@@ -1,0 +1,1 @@
+{cannot 'show-hi'}I can't say hi{cannotelse}I can say hi{/cannot} and {cannot 'show-bye'}I can't say bye{cannotelse}I can say bye{/cannot}

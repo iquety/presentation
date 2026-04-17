@@ -1,0 +1,1 @@
+{can 'show-hi'}I can say hi{canelse}I can't say hi{/can} and {can 'show-bye'}I can say bye{canelse}I can't say bye{/can}
