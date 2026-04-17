@@ -36,6 +36,10 @@ class SmartyEngine implements TemplateEngine
             throw new PathException('No template paths were specified.');
         }
 
+        if ($cachePath === '') {
+            throw new PathException('The cache path was not specified.');
+        }
+
         $smarty = new Smarty();
 
         $smarty->debugging = $this->debugMode;
@@ -44,28 +48,16 @@ class SmartyEngine implements TemplateEngine
             $smarty->addTemplateDir($viewPath);
         }
 
+        $smarty->setCacheResource(new File());
+        $smarty->setCacheDir($cachePath . DIRECTORY_SEPARATOR . 'cached');
+        $smarty->setCompileDir($cachePath . DIRECTORY_SEPARATOR . 'compiled');
+        
         if ($this->debugMode === true) {
             $smarty->setCaching($smarty::CACHING_OFF);
             $smarty->setForceCompile(true);
         }
 
-        if ($cachePath !== '' && $this->debugMode) {
-            $smarty->setCacheResource(new File());
-            // $smarty->cache_lifetime = 120;
-
-            $smarty->setCompileDir($cachePath . DIRECTORY_SEPARATOR . 'compiled');
-            $smarty->setCacheDir($cachePath . DIRECTORY_SEPARATOR . 'cached');
-        }
-
         $smarty->addExtension(new Extension()); 
-
-        // $smarty->registerPlugin(Smarty::PLUGIN_BLOCK, 'can', function($params, $content, Template $template, &$repeat) {
-        //     return CanTag::execute(...func_get_args());
-        // });
-
-        // $smarty->registerPlugin(Smarty::PLUGIN_BLOCK, 'cannot', function($params, $content, Template $template, &$repeat) {
-        //     return CannotTag::execute(...func_get_args());
-        // });
 
         $this->engine = $smarty;
 
