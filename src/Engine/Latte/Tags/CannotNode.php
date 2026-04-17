@@ -21,7 +21,7 @@ use Latte\Compiler\TemplateParser;
 
 
 /**
- * {cannot 'my-permission'} ... {else} ... {/cannot}
+ * {cannot 'my-permission'} ... {cannotelse} ... {/cannot}
  * @see vendor/latte/latte/src/Latte/Essential/CoreExtension.php
  * @see vendor/latte/latte/src/Latte/Essential/Nodes/IfNode.php
  */
@@ -47,7 +47,7 @@ class CannotNode extends StatementNode
             $tagCondition = $tag->parser->parseExpression();
 
             if (!$tagCondition instanceof StringNode) {
-                throw new CompileException("Incorrect syntax for can. Use {cannot 'permission'}.", $tag->position);
+                throw new CompileException("Incorrect syntax for can. Use {cannot 'my-permission'}.", $tag->position);
             }
             
             $canArgument = str_replace(['"', "'", ' '], '', $tag->parser->text);
@@ -57,11 +57,11 @@ class CannotNode extends StatementNode
             $node->condition = self::makeExpression($permissionName, $node->position);
         }
 
-        [$node->then, $nextTag] = yield ['else'];
+        [$node->then, $nextTag] = yield ['cannotelse'];
 
-        if ($nextTag?->name === 'else') {
+        if ($nextTag?->name === 'cannotelse') {
             if ($nextTag->parser->stream->is('cannot')) {
-                throw new CompileException('Arguments are not allowed in {else}.', $nextTag->position);
+                throw new CompileException('Arguments are not allowed in {cannotelse}.', $nextTag->position);
             }
 
             $node->elseLine = $nextTag->position;

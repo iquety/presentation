@@ -13,12 +13,11 @@ use Latte\Compiler\Nodes\StatementNode;
 use Latte\Compiler\NodeTraverser;
 use Latte\Compiler\PrintContext;
 use Latte\Compiler\Tag;
-use Latte\Essential\Nodes\IfNode;
 
 /**
- * <div n:can="my-permission"> ... <div n:celse>
+ * <div n:can="my-permission"> ... <div n:cannotelse>
  */
-final class NCelseNode extends StatementNode
+final class NCannotelseNode extends StatementNode
 {
     public AreaNode $content;
 
@@ -68,7 +67,7 @@ final class NCelseNode extends StatementNode
         for ($i = 0; isset($children[$i]); $i++) {
             $child = $children[$i];
 
-            if ($child instanceof CanNode || $child instanceof CannotNode) {
+            if ($child instanceof CannotNode) {
                 $currentNode = $child;
 
             } elseif ($child instanceof Nodes\TextNode && trim($child->content) === '') {
@@ -77,13 +76,13 @@ final class NCelseNode extends StatementNode
             } elseif ($child instanceof self) {
                 $nElse = $child;
                 if ($currentNode === null) {
-                    throw new CompileException('n:celse must be immediately after n:can, n:cannot etc', $nElse->position);
+                    throw new CompileException('n:cannotelse must be immediately after n:cannot', $nElse->position);
                 } elseif ($currentNode->else) {
-                    throw new CompileException('Multiple "celse" found.', $nElse->position);
+                    throw new CompileException('Multiple "cannotelse" found.', $nElse->position);
                 }
 
                 if ($nElse->condition) {
-                    $elseIfNode = new IfNode;
+                    $elseIfNode = new CannotNode;
                     $elseIfNode->condition = $nElse->condition;
                     $elseIfNode->then = $nElse->content;
                     $elseIfNode->position = $nElse->position;
