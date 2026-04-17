@@ -25,7 +25,7 @@ final class CannotTokenParser extends AbstractTokenParser
         $end = false;
         while (!$end) {
             switch ($stream->next()->getValue()) {
-                case 'else':
+                case 'cannotelse':
                     $stream->expect(Token::BLOCK_END_TYPE);
                     $else = $this->parser->subparse([$this, 'decideIfEnd']);
                     break;
@@ -46,7 +46,7 @@ final class CannotTokenParser extends AbstractTokenParser
 
     public function decideIfFork(Token $token): bool
     {
-        return $token->test(['else', 'endcannot']);
+        return $token->test(['cannotelse', 'endcannot']);
     }
 
     public function decideIfEnd(Token $token): bool

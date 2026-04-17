@@ -24,7 +24,7 @@ class CanNode extends Node
         }
         $nodes = ['tests' => $tests];
         if (null !== $else) {
-            $nodes['else'] = $else;
+            $nodes['canelse'] = $else;
         }
 
         parent::__construct($nodes, [], $lineno);
@@ -53,12 +53,12 @@ class CanNode extends Node
             $compiler->subcompile($this->getNode('tests')->getNode((string) 1));
         }
 
-        if ($this->hasNode('else')) {
+        if ($this->hasNode('canelse')) {
             $compiler
                 ->outdent()
                 ->write("} else {\n")
                 ->indent()
-                ->subcompile($this->getNode('else'))
+                ->subcompile($this->getNode('canelse'))
             ;
         }
 

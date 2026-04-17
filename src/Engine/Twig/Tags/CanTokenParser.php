@@ -14,9 +14,6 @@ final class CanTokenParser extends AbstractTokenParser
 {
     public function parse(Token $token): Node
     {
-        // dd($this->parser->getEnvironment());
-        // dd($this->parser->getStream());
-
         $lineno = $token->getLine();
         $expr = $this->parser->parseExpression();
         $stream = $this->parser->getStream();
@@ -28,7 +25,7 @@ final class CanTokenParser extends AbstractTokenParser
         $end = false;
         while (!$end) {
             switch ($stream->next()->getValue()) {
-                case 'else':
+                case 'canelse':
                     $stream->expect(Token::BLOCK_END_TYPE);
                     $else = $this->parser->subparse([$this, 'decideIfEnd']);
                     break;
@@ -49,7 +46,7 @@ final class CanTokenParser extends AbstractTokenParser
 
     public function decideIfFork(Token $token): bool
     {
-        return $token->test(['else', 'endcan']);
+        return $token->test(['canelse', 'endcan']);
     }
 
     public function decideIfEnd(Token $token): bool

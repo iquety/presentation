@@ -24,7 +24,7 @@ class CannotNode extends Node
         }
         $nodes = ['tests' => $tests];
         if (null !== $else) {
-            $nodes['else'] = $else;
+            $nodes['cannotelse'] = $else;
         }
 
         parent::__construct($nodes, [], $lineno);
@@ -54,12 +54,12 @@ class CannotNode extends Node
             $compiler->subcompile($this->getNode('tests')->getNode((string) 1));
         }
 
-        if ($this->hasNode('else')) {
+        if ($this->hasNode('cannotelse')) {
             $compiler
                 ->outdent()
                 ->write("} else {\n")
                 ->indent()
-                ->subcompile($this->getNode('else'))
+                ->subcompile($this->getNode('cannotelse'))
             ;
         }
 
