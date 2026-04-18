@@ -1,0 +1,1 @@
+<?php if($this->cannot('show-hi')):?>I can't say hi<?php endif?> and <?php if($this->cannot('show-bye')):?>I can't say bye<?php endif?>

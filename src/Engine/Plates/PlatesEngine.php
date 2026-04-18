@@ -8,14 +8,20 @@ use Iquety\Presentation\Engine\EngineException;
 use Iquety\Presentation\Engine\TemplateEngine;
 use Iquety\Presentation\Engine\PathException;
 use Iquety\Presentation\Engine\ViewException;
-use League\Plates\Engine;
 
 class PlatesEngine implements TemplateEngine
 {
-    private ?Engine $engine = null;
+    private ?Plates $engine = null;
 
     /** @var array<string,string> $namespaceList */
     private array $namespaceList = [];
+
+    private bool $debugMode = false;
+
+    public function enableDebug(): void
+    {
+        $this->debugMode = true;
+    }
 
     /**
      * @param array<string> $viewPathList
@@ -29,7 +35,7 @@ class PlatesEngine implements TemplateEngine
             throw new PathException('No template paths were specified.');
         }
 
-        $plates = new Engine();
+        $plates = new Plates();
         $plates->setFileExtension('tpl');
 
         foreach ($viewPathList as $viewPath) {
