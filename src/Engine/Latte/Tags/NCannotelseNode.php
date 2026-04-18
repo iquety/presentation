@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Iquety\Presentation\Engine\Latte\Tags;
 
+use Generator;
 use Latte\CompileException;
 use Latte\Compiler\Node;
 use Latte\Compiler\Nodes;
@@ -13,6 +14,7 @@ use Latte\Compiler\Nodes\StatementNode;
 use Latte\Compiler\NodeTraverser;
 use Latte\Compiler\PrintContext;
 use Latte\Compiler\Tag;
+use LogicException;
 
 /**
  * <div n:can="my-permission"> ... <div n:cannotelse>
@@ -26,19 +28,20 @@ final class NCannotelseNode extends StatementNode
     /** @return \Generator<int, ?list<string>, array{AreaNode, ?Tag}, static> */
     public static function create(Tag $tag): \Generator
     {
-        $node = $tag->node = new static;
+        $node = $tag->node = new static();
 
         [$node->content] = yield;
 
         return $node;
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
     public function print(PrintContext $context): string
     {
-        throw new \LogicException('Cannot directly print');
+        throw new LogicException('Cannot directly print');
     }
 
-    public function &getIterator(): \Generator
+    public function &getIterator(): Generator
     {
         if ($this->condition) {
             yield $this->condition;
@@ -48,7 +51,7 @@ final class NCannotelseNode extends StatementNode
 
     public static function processPass(Node $node): void
     {
-        (new NodeTraverser)->traverse($node, function (Node $node) {
+        (new NodeTraverser())->traverse($node, function (Node $node): void {
             if ($node instanceof Nodes\FragmentNode) {
                 $node->children = self::processFragment($node->children);
             } elseif ($node instanceof self) {
@@ -60,6 +63,8 @@ final class NCannotelseNode extends StatementNode
     /**
      * @param  AreaNode[]  $children
      * @return AreaNode[]
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.ElseExpression)
      */
     private static function processFragment(array $children): array
     {
@@ -82,7 +87,7 @@ final class NCannotelseNode extends StatementNode
                 }
 
                 if ($nElse->condition) {
-                    $elseIfNode = new CannotNode;
+                    $elseIfNode = new CannotNode();
                     $elseIfNode->condition = $nElse->condition;
                     $elseIfNode->then = $nElse->content;
                     $elseIfNode->position = $nElse->position;

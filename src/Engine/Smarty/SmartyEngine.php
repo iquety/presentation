@@ -51,13 +51,13 @@ class SmartyEngine implements TemplateEngine
         $smarty->setCacheResource(new File());
         $smarty->setCacheDir($cachePath . DIRECTORY_SEPARATOR . 'cached');
         $smarty->setCompileDir($cachePath . DIRECTORY_SEPARATOR . 'compiled');
-        
+
         if ($this->debugMode === true) {
             $smarty->setCaching($smarty::CACHING_OFF);
             $smarty->setForceCompile(true);
         }
 
-        $smarty->addExtension(new Extension()); 
+        $smarty->addExtension(new Extension());
 
         $this->engine = $smarty;
 

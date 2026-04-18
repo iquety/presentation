@@ -29,7 +29,19 @@ class SmartyEngineTest extends TestCase
         $this->expectExceptionMessage('No template paths were specified.');
 
         $engine = new SmartyEngine();
-        $engine->bootEngine([], '');
+        $engine->bootEngine([], __DIR__ . '/Stubs/SmartyCache');
+
+        $engine->render('folder.hello', [], []);
+    }
+
+    /** @test */
+    public function cacheException(): void
+    {
+        $this->expectException(PathException::class);
+        $this->expectExceptionMessage('The cache path was not specified.');
+
+        $engine = new SmartyEngine();
+        $engine->bootEngine([__DIR__ . '/Stubs/SmartyOne'], '');
 
         $engine->render('folder.hello', [], []);
     }
@@ -41,7 +53,7 @@ class SmartyEngineTest extends TestCase
         $this->expectExceptionMessage('Unable to find template "ops.tpl"');
 
         $engine = new SmartyEngine();
-        $engine->bootEngine([__DIR__ . '/Stubs/SmartyOne'], '');
+        $engine->bootEngine([__DIR__ . '/Stubs/SmartyOne'], __DIR__ . '/Stubs/SmartyCache');
 
         $engine->render('ops', [], []);
     }

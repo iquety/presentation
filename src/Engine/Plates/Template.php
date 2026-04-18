@@ -42,4 +42,3 @@ class Template extends PlatesTemplate
             );
     }
 }
-

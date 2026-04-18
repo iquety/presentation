@@ -15,6 +15,13 @@ class BladeEngine implements TemplateEngine
 {
     private ?BladeOne $engine = null;
 
+    private bool $debugMode = false;
+
+    public function enableDebug(): void
+    {
+        $this->debugMode = true;
+    }
+
     /**
      * @param array<string> $viewPathList
      * @return Environment

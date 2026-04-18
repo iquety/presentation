@@ -7,7 +7,6 @@ namespace Iquety\Presentation\Engine\Smarty;
 use Iquety\Presentation\Engine\Smarty\Tags\CanTag;
 use Iquety\Presentation\Engine\Smarty\Tags\CanElseTag;
 use Iquety\Presentation\Engine\Smarty\Tags\CanClose;
-
 use Iquety\Presentation\Engine\Smarty\Tags\CannotTag;
 use Iquety\Presentation\Engine\Smarty\Tags\CannotClose;
 use Iquety\Presentation\Engine\Smarty\Tags\CannotElseTag;

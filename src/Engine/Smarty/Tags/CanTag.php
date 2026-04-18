@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Iquety\Presentation\Engine\Smarty\Tags;
 
 use Smarty\Compile\Base;
-use Smarty\Compile\Tag\Assign;
 use Smarty\Compiler\Template;
 use Smarty\CompilerException;
 
-class CanTag extends Base {
-
+class CanTag extends Base
+{
     /**
      * Compiles code for the {can} tag
      *
@@ -21,10 +20,11 @@ class CanTag extends Base {
      * @return string compiled code
      * @throws CompilerException
      * @see vendor/smarty/smarty/src/Parser/TemplateParser.php[2382]
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function compile($args, Template $compiler, $parameter = [], $tag = null, $function = null): string
     {
-        if(
+        if (
             count($args) !== 1 // apenas uma permissão é aceita
             || isset($args[0][0]) === false // deve ser um valor indexado com a permissão
         ) {
@@ -39,7 +39,7 @@ class CanTag extends Base {
         $this->openTag($compiler, 'can', [1, $compiler->tag_nocache]);
 
         $permission = 'permission-' . str_replace(['"', "'"], '', $args[0]);
-        
+
         return "<?php if (\n"
             . "  \$_smarty_tpl->getValue('$permission') !== null\n"
             . "  && (\n"
@@ -48,6 +48,6 @@ class CanTag extends Base {
             . "    || \$_smarty_tpl->getValue('$permission') === '1'"
             . "    || \$_smarty_tpl->getValue('$permission') === 1"
             . "  )\n"
-            . ") {?>";
+            . ') {?>';
     }
 }

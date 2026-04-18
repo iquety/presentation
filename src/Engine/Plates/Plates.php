@@ -14,11 +14,10 @@ class Plates extends Engine
      * @param  array    $data
      * @return Template
      */
-    public function make($name, array $data = array())
+    public function make($name, array $data = [])
     {
         $template = new Template($this, $name);
         $template->data($data);
         return $template;
     }
 }
-

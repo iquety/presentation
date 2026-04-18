@@ -37,15 +37,15 @@ class CannotNode extends Node
 
         $compiler->addDebugInfo($this);
         $compiler
-            ->write("if (")
+            ->write('if (')
             ->raw("  isset(\$context['$permission'])\n")
-            ->raw("  && (")
+            ->raw('  && (')
             ->raw("  \$context['$permission'] === ''")
             ->raw("  || \$context['$permission'] === 'false'")
             ->raw("  || \$context['$permission'] === false")
             ->raw("  || \$context['$permission'] === '0'")
             ->raw("  || \$context['$permission'] === 0")
-            ->raw("  )")
+            ->raw('  )')
             ->raw(") {\n")
             ->indent();
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Iquety\Presentation\Engine\Mustache;
 
-use Closure;
 use Iquety\Presentation\Engine\EngineException;
 use Iquety\Presentation\Engine\TemplateEngine;
 use Iquety\Presentation\Engine\PathException;
@@ -24,7 +23,7 @@ class MustacheEngine implements TemplateEngine
     {
         $this->debugMode = true;
     }
-    
+
     /**
      * @param array<string> $viewPathList
      * @return Environment
@@ -91,8 +90,8 @@ class MustacheEngine implements TemplateEngine
     {
         $parsedVariables = [];
 
-        foreach($variableList as $name => $value) {
-            if(str_starts_with($name, 'permission') === true) {
+        foreach ($variableList as $name => $value) {
+            if (str_starts_with($name, 'permission') === true) {
                 $this->makePermissionTags($name, $value, $parsedVariables);
                 continue;
             }

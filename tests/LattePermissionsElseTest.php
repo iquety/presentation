@@ -9,7 +9,7 @@ use Iquety\Presentation\Engine\Latte\LatteEngine;
 class LattePermissionsElseTest extends TestCase
 {
     use HasPermissionProvidersTrait;
-    
+
     /**
      * @test
      * @dataProvider canElseProvider

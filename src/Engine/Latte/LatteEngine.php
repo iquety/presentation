@@ -21,7 +21,7 @@ class LatteEngine implements TemplateEngine
     {
         $this->debugMode = true;
     }
-    
+
     /**
      * @param array<string> $viewPathList
      * @return Environment

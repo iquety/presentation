@@ -13,25 +13,27 @@ use Latte\Extension as LatteExtension;
 /** @see vendor/latte/latte/src/Latte/Essential/CoreExtension.php */
 class Extension extends LatteExtension
 {
-	/**
-	 * Retorna a lista de tags fornecidas por esta extensão.
-	 * @return array<string, callable> Mapa: 'nome-da-tag' => funcao-de-parsing
-	 */
-	public function getTags(): array
-	{
-		return [
-			'can'           => CanNode::create(...),
-			'cannot'        => CannotNode::create(...),
-			'n:canelse'    => NCanelseNode::create(...),
-			'n:cannotelse' => NCannotelseNode::create(...),
-		];
-	}
+    /**
+     * Retorna a lista de tags fornecidas por esta extensão.
+     * @return array<string, callable> Mapa: 'nome-da-tag' => funcao-de-parsing
+     * @SuppressWarnings(PHPMD.StaticAccess)
+     */
+    public function getTags(): array
+    {
+        return [
+            'can'          => CanNode::create(...),
+            'cannot'       => CannotNode::create(...),
+            'n:canelse'    => NCanelseNode::create(...),
+            'n:cannotelse' => NCannotelseNode::create(...),
+        ];
+    }
 
-	public function getPasses(): array
-	{
-		return [
-			'nCanelse'    => NCanelseNode::processPass(...),
-			'nCannotelse' => NCannotelseNode::processPass(...),
-		];
-	}
+    /** @SuppressWarnings(PHPMD.StaticAccess) */
+    public function getPasses(): array
+    {
+        return [
+            'nCanelse'    => NCanelseNode::processPass(...),
+            'nCannotelse' => NCannotelseNode::processPass(...),
+        ];
+    }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Iquety\Presentation\Engine\Latte\Tags;
 
+use Generator;
 use Latte\CompileException;
 use Latte\Compiler\Nodes\AreaNode;
 use Latte\Compiler\Nodes\Php\Expression\BinaryOpNode;
@@ -23,6 +24,8 @@ use Latte\Compiler\TemplateParser;
  * {can 'my-permission'} ... {canelse} ... {/can}
  * @see vendor/latte/latte/src/Latte/Essential/CoreExtension.php
  * @see vendor/latte/latte/src/Latte/Essential/Nodes/IfNode.php
+ * 
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class CanNode extends StatementNode
 {
@@ -32,10 +35,13 @@ class CanNode extends StatementNode
     public ?Position $elseLine = null;
     public bool $capture = false;
 
-    /** @return \Generator<int, ?list<string>, array{AreaNode, ?Tag}, static> */
-    public static function create(Tag $tag, TemplateParser $parser): \Generator
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return Generator<int, ?list<string>, array{AreaNode, ?Tag}, static>
+     */
+    public static function create(Tag $tag, TemplateParser $parser): Generator
     {
-        $node = $tag->node = new static;
+        $node = $tag->node = new static();
 
         $node->position = $tag->position;
 
@@ -47,7 +53,7 @@ class CanNode extends StatementNode
             if (!$tagCondition instanceof StringNode) {
                 throw new CompileException("Incorrect syntax for can. Use {can 'my-permission'}.", $tag->position);
             }
-            
+
             $canArgument = str_replace(['"', "'", ' '], '', $tag->parser->text);
 
             $permissionName = 'permission_' . str_replace('-', '_', $canArgument);
@@ -76,6 +82,23 @@ class CanNode extends StatementNode
         return $node;
     }
 
+    public function print(PrintContext $context): string
+    {
+        return $this->capture
+            ? $this->printCapturing($context)
+            : $this->printCommon($context);
+    }
+
+
+    public function &getIterator(): \Generator
+    {
+        yield $this->condition;
+        yield $this->then;
+        if ($this->else) {
+            yield $this->else;
+        }
+    }
+
     private static function makeExpression(string $permissionName, Position $position): BinaryOpNode
     {
         $isset = new BinaryOpNode(
@@ -87,45 +110,47 @@ class CanNode extends StatementNode
         $boolString = new BinaryOpNode(
             new VariableNode($permissionName),
             '===',
-            new StringNode("true")
+            new StringNode('true')
         );
 
         $boolReal = new BinaryOpNode(
             $boolString,
             '||',
-            new BinaryOpNode(new VariableNode($permissionName), '===', new BooleanNode(true)
+            new BinaryOpNode(
+                new VariableNode($permissionName),
+                '===',
+                new BooleanNode(true)
             )
         );
 
         $numericString = new BinaryOpNode(
             $boolReal,
             '||',
-            new BinaryOpNode(new VariableNode($permissionName), '===', new StringNode("1")
+            new BinaryOpNode(
+                new VariableNode($permissionName),
+                '===',
+                new StringNode('1')
             )
         );
 
         $numericInt = new BinaryOpNode(
             $numericString,
             '||',
-            new BinaryOpNode(new VariableNode($permissionName), '===', new IntegerNode(1)
+            new BinaryOpNode(
+                new VariableNode($permissionName),
+                '===',
+                new IntegerNode(1)
             )
         );
 
         return new BinaryOpNode($isset, '&&', $numericInt, $position);
     }
 
-    public function print(PrintContext $context): string
-    {
-        return $this->capture
-            ? $this->printCapturing($context)
-            : $this->printCommon($context);
-    }
-
 
     private function printCommon(PrintContext $context): string
     {
         if ($this->else !== null) {
-            $text = $context->format(
+            return $context->format(
                 ($this->else instanceof self
                     ? "if (%node) %line { %node } else%node\n"
                     : "if (%node) %line { %node } else %4.line { %3.node }\n"),
@@ -135,18 +160,14 @@ class CanNode extends StatementNode
                 $this->else,
                 $this->elseLine,
             );
-
-            return $text;
         }
 
-        $text =  $context->format(
+        return $context->format(
             "if (%node) %line { %node }\n",
             $this->condition,
             $this->position,
             $this->then,
         );
-
-        return $text;
     }
 
 
@@ -194,15 +215,5 @@ class CanNode extends StatementNode
             $this->then,
             $this->condition,
         );
-    }
-
-
-    public function &getIterator(): \Generator
-    {
-        yield $this->condition;
-        yield $this->then;
-        if ($this->else) {
-            yield $this->else;
-        }
     }
 }

@@ -8,8 +8,8 @@ use Smarty\Compile\Base;
 use Smarty\Compiler\Template;
 use Smarty\CompilerException;
 
-class CannotTag extends Base {
-
+class CannotTag extends Base
+{
     /**
      * Compiles code for the {can} tag
      *
@@ -20,10 +20,11 @@ class CannotTag extends Base {
      * @return string compiled code
      * @throws CompilerException
      * @see vendor/smarty/smarty/src/Parser/TemplateParser.php[2382]
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function compile($args, Template $compiler, $parameter = [], $tag = null, $function = null): string
     {
-        if(
+        if (
             count($args) !== 1 // apenas uma permissão é aceita
             || isset($args[0][0]) === false // deve ser um valor indexado com a permissão
         ) {
@@ -38,7 +39,7 @@ class CannotTag extends Base {
         $this->openTag($compiler, 'cannot', [1, $compiler->tag_nocache]);
 
         $permission = 'permission-' . str_replace(['"', "'"], '', $args[0]);
-        
+
         return "<?php if (\n"
             . "  \$_smarty_tpl->getValue('$permission') !== null\n"
             . "  && (\n"
@@ -48,6 +49,6 @@ class CannotTag extends Base {
             . "    || \$_smarty_tpl->getValue('$permission') === '0'"
             . "    || \$_smarty_tpl->getValue('$permission') === 0"
             . "  )\n"
-            . ") {?>";
+            . ') {?>';
     }
 }
