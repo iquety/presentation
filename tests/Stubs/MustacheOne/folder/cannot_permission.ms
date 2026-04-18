@@ -1,0 +1,1 @@
+{{# cannot-show-hi }}I can't say hi{{/ cannot-show-hi }} and {{# cannot-show-bye }}I can't say bye{{/ cannot-show-bye }}

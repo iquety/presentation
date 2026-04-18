@@ -1,0 +1,1 @@
+{{# can-show-hi }}I can say hi{{/ can-show-hi }}{{^ can-show-hi }}I can't say hi{{/ can-show-hi }} and {{# can-show-bye }}I can say bye{{/ can-show-bye }}{{^ can-show-bye }}I can't say bye{{/ can-show-bye }}
