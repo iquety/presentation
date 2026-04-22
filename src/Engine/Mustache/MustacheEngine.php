@@ -105,9 +105,9 @@ class MustacheEngine implements TemplateEngine
     /** @param array<string,mixed> $variableList */
     private function makePermissionTags(string $tag, mixed $value, array & $variableList): void
     {
-        $permissionTag = str_replace('permission-', '', $tag);
-        $canTag = 'can-' . $permissionTag;
-        $cannotTag = 'cannot-' . $permissionTag;
+        $permissionTag = str_replace('permission_', '', $tag);
+        $canTag = 'can_' . $permissionTag;
+        $cannotTag = 'cannot_' . $permissionTag;
 
         unset($variableList[$tag]);
 

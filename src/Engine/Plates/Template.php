@@ -14,7 +14,7 @@ class Template extends PlatesTemplate
      */
     public function can($name): bool
     {
-        $permission = 'permission-' . $name;
+        $permission = 'permission_' . $name;
 
         return isset($this->data[$permission]) === true
             && (
@@ -31,7 +31,7 @@ class Template extends PlatesTemplate
      */
     public function cannot($name): bool
     {
-        $permission = 'permission-' . $name;
+        $permission = 'permission_' . $name;
 
         return isset($this->data[$permission]) === true
             && (

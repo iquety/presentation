@@ -51,7 +51,7 @@ class CanNode extends StatementNode
             $tagCondition = $tag->parser->parseExpression();
 
             if (!$tagCondition instanceof StringNode) {
-                throw new CompileException("Incorrect syntax for can. Use {can 'my-permission'}.", $tag->position);
+                throw new CompileException("Incorrect syntax for can. Use {can 'my_permission'}.", $tag->position);
             }
 
             $canArgument = str_replace(['"', "'", ' '], '', $tag->parser->text);

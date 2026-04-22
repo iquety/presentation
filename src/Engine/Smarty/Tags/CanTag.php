@@ -38,7 +38,7 @@ class CanTag extends Base
 
         $this->openTag($compiler, 'can', [1, $compiler->tag_nocache]);
 
-        $permission = 'permission-' . str_replace(['"', "'"], '', $args[0]);
+        $permission = 'permission_' . str_replace(['"', "'"], '', $args[0]);
 
         return "<?php if (\n"
             . "  \$_smarty_tpl->getValue('$permission') !== null\n"

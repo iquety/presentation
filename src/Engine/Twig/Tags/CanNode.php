@@ -33,7 +33,8 @@ class CanNode extends Node
     public function compile(Compiler $compiler): void
     {
         $canNode = $this->getNode('tests')->getNode((string) 0);
-        $permission = 'permission-' . $canNode->getAttribute('value');
+        
+        $permission = 'permission_' . $canNode->getAttribute('value');
 
         $compiler->addDebugInfo($this);
         $compiler
