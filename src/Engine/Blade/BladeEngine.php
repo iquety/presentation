@@ -13,13 +13,22 @@ use Iquety\Presentation\Engine\ViewException;
 
 class BladeEngine implements TemplateEngine
 {
-    private ?BladeOne $engine = null;
+    private ?Blade $engine = null;
 
     private bool $debugMode = false;
+
+    private bool $reseting = false;
 
     public function enableDebug(): void
     {
         $this->debugMode = true;
+    }
+
+    public function resetAfterBoot(): void
+    {
+        $this->engine->clearcompile();
+        $this->engine->clearControlStack();
+        $this->engine->clearMethods();
     }
 
     /**
@@ -34,11 +43,17 @@ class BladeEngine implements TemplateEngine
             throw new PathException('No template paths were specified.');
         }
 
-        $blade = new BladeOne();
+        $blade = new Blade();
         $blade->pipeEnable   = true;
         $blade->throwOnError = true;
+
         $blade->setPath($viewPathList, null);
 
+        $mode = $this->debugMode === true ? Blade::MODE_DEBUG : Blade::MODE_AUTO;
+            
+        $blade->setMode($mode);
+
+        // compile path
         if ($cachePath !== '') {
             $blade->setPath($viewPathList, $cachePath);
         }

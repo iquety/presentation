@@ -1,0 +1,1 @@
+@can('show_hi') I can say hi @endcan and @can('show_bye') I can say bye @endcan

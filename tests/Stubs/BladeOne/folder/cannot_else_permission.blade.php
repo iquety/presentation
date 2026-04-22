@@ -1,0 +1,1 @@
+@cannot('show_hi') I can't say hi @cannotelse I can say hi @endcannot and @cannot('show_bye') I can't say bye @cannotelse I can say bye @endcannot
