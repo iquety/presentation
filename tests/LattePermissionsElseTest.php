@@ -26,10 +26,6 @@ class LattePermissionsElseTest extends TestCase
 
         $data = [];
 
-        // Latte não aceita variáveis slug
-        $hiPermission = $this->toSnakeCase($hiPermission);
-        $byePermission = $this->toSnakeCase($byePermission);
-
         if ($hiPermission !== '') {
             $data["permission_$hiPermission"] = $hiValue;
         }
@@ -65,10 +61,6 @@ class LattePermissionsElseTest extends TestCase
 
         $data = [];
 
-        // Latte não aceita variáveis slug
-        $hiPermission = $this->toSnakeCase($hiPermission);
-        $byePermission = $this->toSnakeCase($byePermission);
-
         if ($hiPermission !== '') {
             $data["permission_$hiPermission"] = $hiValue;
         }
@@ -103,10 +95,5 @@ class LattePermissionsElseTest extends TestCase
         }
 
         return '<div>' . str_replace(' and ', '</div> and <div>', $expected) . '</div>';
-    }
-
-    private function toSnakeCase(string $slugCase): string
-    {
-        return str_replace('-', '_', $slugCase);
     }
 }

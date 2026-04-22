@@ -7,6 +7,10 @@ namespace Tests;
 use Exception;
 use PHPUnit\Framework\TestCase as FrameworkTestCase;
 
+// TODO: é preciso fazer testes de debug mode
+// TODO: é preciso fazer testes de formato de dados
+// TODO: @see src/Engine/Blade/Blade.php[17]
+
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.NumberOfChildren)

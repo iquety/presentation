@@ -27,11 +27,11 @@ class SmartyPermissionsElseTest extends TestCase
         $data = [];
 
         if ($hiPermission !== '') {
-            $data["permission-$hiPermission"] = $hiValue;
+            $data["permission_$hiPermission"] = $hiValue;
         }
 
         if ($byePermission !== '') {
-            $data["permission-$byePermission"] = $byeValue;
+            $data["permission_$byePermission"] = $byeValue;
         }
 
         $this->assertSame(
@@ -57,11 +57,11 @@ class SmartyPermissionsElseTest extends TestCase
         $data = [];
 
         if ($hiPermission !== '') {
-            $data["permission-$hiPermission"] = $hiValue;
+            $data["permission_$hiPermission"] = $hiValue;
         }
 
         if ($byePermission !== '') {
-            $data["permission-$byePermission"] = $byeValue;
+            $data["permission_$byePermission"] = $byeValue;
         }
 
         $this->assertSame(
